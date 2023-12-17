@@ -5,7 +5,7 @@ from env import HASHING_SECRET_KEY, HASH_ALGORITHM
 
 
 
-def decode_jwt_token(token: str):
+def decodeJwtToken(token: str):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

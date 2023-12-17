@@ -4,7 +4,7 @@ from env import HASH_ALGORITHM , HASHING_SECRET_KEY , TOKEN_LIFE_TIME
 from typing import Optional
 
 
-def create_jwt_token(data: dict, expires_delta: Optional[timedelta] = None):
+def createJwtToken(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
