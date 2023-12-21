@@ -1,3 +1,4 @@
+from base64 import b64decode
 from datetime import datetime, timedelta
 import jwt
 from env import HASH_ALGORITHM , HASHING_SECRET_KEY , TOKEN_LIFE_TIME

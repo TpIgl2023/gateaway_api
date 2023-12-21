@@ -1,15 +1,7 @@
-import json
-
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import  status
 from fastapi.security import OAuth2PasswordBearer
-import jwt
-from jwt import PyJWTError
-from datetime import datetime, timedelta
-from typing import Optional
 from starlette.responses import JSONResponse
-
 from Core.createJwtToken import createJwtToken
-from Core.decodeJwtToken import decodeJwtToken
 from Core.getAccountsWithFilter import getAccountsWithFilter
 from Core.hashString import hashString
 
@@ -21,19 +13,24 @@ async def loginAccountHandler(email, password):
     try:
         password = hashString(password)
 
-        usersResponse = getAccountsWithFilter({"email":email})
+        upperCaseEmail = email.lower()
+
+        usersResponse = getAccountsWithFilter({"email":upperCaseEmail})
+
         # Check if the user exists
         if (usersResponse["message"] == "Accounts retrieved successfully"):
             users = usersResponse["accounts"]
             if len(users) != 0:
                 for user in users:
                     if user["password"] == password:
-                        token_data = {"sub": user["email"]}
+                        token_data = {"email": user["email"],"status": user["status"]}
                         jwt_token = createJwtToken(token_data)
                         response = JSONResponse(
-                            content={"success":True},
+                            content={"success":True,"user":user},
                             headers={"Authorization": f"Bearer {jwt_token}"},
                             )
+                        del user["password"]
+
                         response.set_cookie(key="Authorization", value=jwt_token,httponly=True)
                         return response
         return JSONResponse(
@@ -44,7 +41,7 @@ async def loginAccountHandler(email, password):
             })
     except Exception as e:
         return JSONResponse(
-            status_code=500,
+            status_code=502,
             content={
                 "message": "Error while authenticating user",
                 "error": str(e)

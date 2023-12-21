@@ -5,6 +5,6 @@ from Handlers.basicHandler import basicHandler
 rootRouter = APIRouter()
 
 @rootRouter.get("/")
-async def handle_pdf():
+async def basicHandler():
     return await basicHandler()
 

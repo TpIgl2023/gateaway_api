@@ -9,4 +9,5 @@ def hashString(string):
     # Combine password and salt, then hash
     string_salt_combo = string.encode('utf-8') + salt
     hashed_string = hashlib.sha256(string_salt_combo).hexdigest()
+    print(hashed_string)
     return hashed_string
