@@ -11,7 +11,6 @@ class Article:
         self.bibliography = None
         self.publishingDate = None
 
-
     def __str__(self):
 
         return f"Title: {self.title}\n" \
@@ -35,3 +34,5 @@ class Article:
             "bibliography": self.bibliography,
             "publishingDate": self.publishingDate
         }
+
+

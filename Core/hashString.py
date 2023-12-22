@@ -2,7 +2,7 @@ import hashlib
 import secrets
 import bcrypt
 
-from env import HASHING_SALT
+from Core.Environment.env import HASHING_SALT
 
 def hashString(string):
     salt = HASHING_SALT.encode('utf-8')

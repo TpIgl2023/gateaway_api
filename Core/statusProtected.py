@@ -4,7 +4,7 @@ import jwt
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.responses import JSONResponse
 
-from env import HASHING_SECRET_KEY , HASH_ALGORITHM
+from Core.Environment.env import HASHING_SECRET_KEY, HASH_ALGORITHM
 
 app = FastAPI()
 

@@ -1,3 +1,4 @@
+
 # ----------------------------------- APIs ----------------------------------
 DATABASE_API_URL = "https://database-service-t3er.onrender.com"
 DATABASE_SERVICE_API_KEY = "ad188b63-b8e0-4c34-8781-df6cc17ae132"
@@ -13,3 +14,4 @@ TOKEN_LIFE_TIME = 15  # In minutes
 
 # ---------------------------- PASSWORD HASHING -----------------------------
 HASHING_SALT = "OILEDNIGERS" # Disclamer : Changing this value will corrupt all the previous accounts in the database
+
