@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from Handlers.basic_handler import basic_handler
+from Handlers.basicHandler import basicHandler
 from Core.Configuration.elasticsearchConfiguration import es
 
 
@@ -45,5 +45,5 @@ async def handle_pdf():
         print(hit['_source'])
         print("\n")
 
-    return await basic_handler()
+    return await basicHandler()
 
