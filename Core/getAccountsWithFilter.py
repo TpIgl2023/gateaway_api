@@ -1,6 +1,6 @@
 import requests
 import json
-from env import DATABASE_API_URL , DATABASE_SERVICE_API_KEY
+from Core.Environment.env import DATABASE_API_URL , DATABASE_SERVICE_API_KEY
 def getAccountsWithFilter(user):
     #try:
         response = requests.get(
