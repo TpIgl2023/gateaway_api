@@ -52,3 +52,8 @@ def search_articles(query: str):
 
     # return the results
     return total, articles_ids
+
+
+def remove_article_from_index(article_id: int):
+    # Remove the article from the index
+    es.delete(index=ARTICLE_INDEX, id=article_id)
