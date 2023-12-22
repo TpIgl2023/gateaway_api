@@ -28,3 +28,27 @@ def _build_document_index(article: Article):
     # index is ready
     return index
 
+
+def search_articles(query: str):
+    # Search across all fields in all indices
+    search_query = {
+        'query': {
+            'multi_match': {
+                'query': query,
+                'fields': ['*'],
+                'type': 'best_fields'
+            }
+        }
+    }
+
+    # Search the index
+    search_results = es.search(index=ARTICLE_INDEX, body=search_query)
+
+    # Get the number of results
+    total = search_results['hits']['total']['value']
+
+    # Extract document IDs and create an array
+    articles_ids = [hit['_id'] for hit in search_results['hits']['hits']]
+
+    # return the results
+    return total, articles_ids
