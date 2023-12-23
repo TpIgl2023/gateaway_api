@@ -30,6 +30,7 @@ async def registerAccountHandler(email, name, password, phone):
                 token_data = {"email": lowerCaseEmail,"status": "status"}
                 jwt_token = createJwtToken(token_data)
                 user = {
+                    #! idk how to generate the id
                     "id" : 31,
                     "name": name,
                     "email": email,
@@ -43,28 +44,38 @@ async def registerAccountHandler(email, name, password, phone):
                 del password
                 response.set_cookie(key="Authorization", value=jwt_token,httponly=True)
                 return response
-            else :
+            else:
                 JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 content={
                     "success": False,
-                    "message":"Email already used"
+                    "message":"This Email is already used"
                 })
         else :
+            cpt = 0
+            if(not emailIsValid):
+                message =+ "email, "
+                cpt =+ 1
+            if(not nameIsValid):
+                message =+ "name, "
+                cpt =+1
+            if(not passwordIsValid):
+                message =+ "password, "
+                cpt =+1
+            if (not mobileIsValid):
+                phone =+ "phone, "
+                cpt =+1
+            if (cpt == 1):
+                message =+ "chunk is not valid ! please review it then retry"
+            else:
+                message =+ "chunks are not valid ! please review them then retry"
             JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
             content={
                 "success": False,
-                "message":"Email is not valid"
+                "message": message
             })
-        
-        
-        
-        
-        #todo complete this
-        
-        
-        
+
     except Exception as e:
         return JSONResponse(
             status_code=502,
