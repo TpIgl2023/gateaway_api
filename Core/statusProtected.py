@@ -29,6 +29,7 @@ privilege_exception = HTTPException(
 def statusProtected(token,status):
     try:
         payload = jwt.decode(token, HASHING_SECRET_KEY, algorithms=[HASH_ALGORITHM])
+        print(payload)
         email: str = payload.get("email")
         user_status : str = payload.get("status")
         if user_status != status:
