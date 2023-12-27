@@ -4,83 +4,74 @@ from starlette.responses import JSONResponse
 from Core.createJwtToken import createJwtToken
 from Core.getAccountsWithFilter import getAccountsWithFilter
 from Core.hashString import hashString
-from Core.registrationExceptions import validate_email_syntax
-from Core.registrationExceptions import validate_password
-from Core.registrationExceptions import validate_mobile
-from Core.registrationExceptions import validate_name
+from Core.fieldsValidation import validations
+from Core.fieldsValidation import errorsTypes
 
 # OAuth2PasswordBearer for handling token authentication
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-async def registerAccountHandler(email, name, password, phone):
+
+async def registerAccountHandler(name,email,password,phone):
     try :
-        password = hashString(password)
         lowerCaseEmail = email.lower()
-        #check if email and password and phone are valid
-        emailIsValid = validate_email_syntax(lowerCaseEmail)
-        passwordIsValid = validate_password(password)
-        mobileIsValid = validate_mobile(phone)
-        nameIsValid = validate_name(name)
+        #check if the fields are valid
+        emailIsValid = validations.validate_email_syntax(lowerCaseEmail)
+        passwordIsValid,_ = validations.validate_password(password)
+        mobileIsValid = validations.validate_mobile(phone)
+        nameIsValid = validations.validate_name(name) 
+        errors = []
         if (emailIsValid & passwordIsValid & mobileIsValid & nameIsValid):
             usersResponse = getAccountsWithFilter({"email":lowerCaseEmail})
             #check if email exists
             users = usersResponse["accounts"]
             if (len(users) == 0):
-                #generating the token 
-                token_data = {"email": lowerCaseEmail,"status": "status"}
-                jwt_token = createJwtToken(token_data)
+                # generating the token 
+                #! token_data = {"email": lowerCaseEmail,"status": "status"}
+                #! jwt_token = createJwtToken(token_data)
+                password = hashString(password)
                 user = {
-                    #! idk how to generate the id
-                    "id" : 31,
                     "name": name,
                     "email": email,
                     "password": password,
                     "phone": phone
                 }
                 response = JSONResponse(
-                    content={"success":True,"user":user},
-                    headers={"Authorization": f"Bearer {jwt_token}"},
+                    content={"success":True,"message":"User created succesfully","user":user},
+                    #! headers={"Authorization": f"Bearer {jwt_token}"},
+                    headers={"Authorization": f"Bearer"},
                     )
-                del password
-                response.set_cookie(key="Authorization", value=jwt_token,httponly=True)
+                del user["password"]
+                #! response.set_cookie(key="Authorization", value=jwt_token,httponly=True)
                 return response
             else:
-                JSONResponse(
+                return JSONResponse(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 content={
                     "success": False,
                     "message":"This Email is already used"
                 })
         else :
-            cpt = 0
-            if(not emailIsValid):
-                message =+ "email, "
-                cpt =+ 1
-            if(not nameIsValid):
-                message =+ "name, "
-                cpt =+1
-            if(not passwordIsValid):
-                message =+ "password, "
-                cpt =+1
-            if (not mobileIsValid):
-                phone =+ "phone, "
-                cpt =+1
-            if (cpt == 1):
-                message =+ "chunk is not valid ! please review it then retry"
-            else:
-                message =+ "chunks are not valid ! please review them then retry"
-            JSONResponse(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            content={
-                "success": False,
-                "message": message
-            })
-
+            passwordValid,passwordErrors = validations.validate_password(password)
+            if(not validations.validate_email_syntax(email)):
+                errors.append(errorsTypes.emailInvalid)
+            if(not validations.validate_name(name)):
+                errors.append(errorsTypes.nameInvalid)
+            if(not passwordValid):
+                errors.append(passwordErrors)
+            if(not validations.validate_mobile(phone)):
+                errors.append(errorsTypes.mobileInvalid)
+            return JSONResponse(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                content={
+                    "success": False,
+                    "message": errors
+                })
+            
     except Exception as e:
         return JSONResponse(
             status_code=502,
             content={
-                "message":"error while registering user",
+                "message":"error while registering user. got an Exception",
                 "error": str(e)
             }
         )

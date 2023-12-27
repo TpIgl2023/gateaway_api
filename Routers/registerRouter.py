@@ -17,4 +17,4 @@ async def registerAccount(register_data : registerRequest):
     email = register_data.email
     password = register_data.password
     phone = register_data.phone
-    return await registerAccountHandler(email, name, password, phone)
+    return await registerAccountHandler(name,email,password,phone)
