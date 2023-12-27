@@ -37,26 +37,6 @@ class validations:
         return val,missings 
     
     
-    def validate_password1(password):  
-        if len(password) < 8:  
-            return False
-        return True 
-    
-    def validate_password2(password):  
-        if not re.search("[a-z]", password):  
-            return False
-        return True 
-    
-    def validate_password3(password):  
-        if not re.search("[A-Z]", password):  
-            return False
-        return True 
-    
-    def validate_password4(password):    
-        if not re.search("[0-9]", password):  
-            return False
-        return True 
-    
     def validate_mobile(mobile):
         return carrier._is_mobile(number_type(phonenumbers.parse(mobile)))
         #return True
