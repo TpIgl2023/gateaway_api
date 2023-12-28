@@ -1,15 +1,26 @@
 class Article:
 
-    def __init__(self):
-        self.title = None
-        self.abstract = None
-        self.authors = None
-        self.institutions = None
-        self.keywords = None
-        self.text = None
-        self.URL = None
-        self.bibliography = None
-        self.publishingDate = None
+    def __init__(
+            self,
+            title = None,
+            abstract = None,
+            authors = None,
+            institutions = None,
+            keywords = None,
+            text = None,
+            URL = None,
+            bibliography = None,
+            publishingDate = None
+    ):
+        self.title = title
+        self.abstract = abstract
+        self.authors = authors
+        self.institutions = institutions
+        self.keywords = keywords
+        self.text = text
+        self.URL = URL
+        self.bibliography = bibliography
+        self.publishingDate = publishingDate
 
     def __str__(self):
 
