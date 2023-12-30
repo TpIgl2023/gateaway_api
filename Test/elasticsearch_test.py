@@ -30,5 +30,7 @@ class TestElasticsearch(unittest.TestCase):
         mock_index_article.assert_called_once_with(article, article_id)
 
 
+
+
 if __name__ == '__main__':
     unittest.main()
