@@ -13,9 +13,9 @@ async def loginAccountHandler(email, password):
     try:
         password = hashString(password)
 
-        upperCaseEmail = email.lower()
+        lowerCaseEmail = email.lower()
 
-        usersResponse = Database.getAccountsWithFilter({"email":upperCaseEmail})
+        usersResponse = Database.getAccountsWithFilter({"email":lowerCaseEmail})
 
         # Check if the user exists
         if (usersResponse["message"] == "Accounts retrieved successfully"):

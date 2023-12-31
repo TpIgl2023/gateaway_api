@@ -31,11 +31,12 @@ async def registerAccountHandler(name,email,password,phone):
                 password = hashString(password)
                 user = {
                     "name": name,
-                    "email": email,
+                    "email": lowerCaseEmail,
                     "password": password,
                     "phone": phone
                 }
-                Database.createUser(user)
+                resp = Database.createUser(user)
+                print(resp)
                 del user["password"]
                 response = JSONResponse(
                     content={"success":True,"message":"User created succesfully","user":user},
