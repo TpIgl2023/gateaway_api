@@ -28,7 +28,6 @@ def _build_document_index(article: Article):
     # index is ready
     return index
 
-'''
 def search_articles(query: str):
     # Search across all fields in all indices
     search_query = {
@@ -42,7 +41,7 @@ def search_articles(query: str):
     }
 
     # Search the index
-    search_results = es.search(index=ARTICLE_INDEX, body=search_query)
+    search_results = elasticsearch.search(index=ARTICLE_INDEX, body=search_query)
 
     # Get the number of results
     total = search_results['hits']['total']['value']
@@ -56,5 +55,4 @@ def search_articles(query: str):
 
 def remove_article_from_index(article_id: int):
     # Remove the article from the index
-    es.delete(index=ARTICLE_INDEX, id=article_id)
-'''
+    elasticsearch.delete(index=ARTICLE_INDEX, id=article_id)
