@@ -3,7 +3,7 @@ from base64 import b64decode
 from fastapi import  HTTPException ,status
 import jwt
 from jwt import PyJWTError
-from env import HASHING_SECRET_KEY, HASH_ALGORITHM
+from Core.Environment.env import HASHING_SECRET_KEY, HASH_ALGORITHM
 
 
 

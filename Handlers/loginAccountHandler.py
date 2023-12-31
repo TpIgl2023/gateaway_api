@@ -23,13 +23,14 @@ async def loginAccountHandler(email, password):
             if len(users) != 0:
                 for user in users:
                     if user["password"] == password:
+                        del user["password"]
                         token_data = {"email": user["email"],"status": user["status"]}
                         jwt_token = createJwtToken(token_data)
                         response = JSONResponse(
                             content={"success":True,"user":user},
                             headers={"Authorization": f"Bearer {jwt_token}"},
                             )
-                        del user["password"]
+
 
                         response.set_cookie(key="Authorization", value=jwt_token,httponly=True)
                         return response

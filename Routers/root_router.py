@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 from Handlers.basicHandler import basicHandler
-from Core.Configuration.elasticsearchConfiguration import es
+#from Core.Configuration.elasticsearchConfiguration import es
 
 
 root_router = APIRouter()
-
+'''
 @root_router.get("/")
 async def handle_pdf():
     # Indexing a document
@@ -45,5 +45,5 @@ async def handle_pdf():
         print(hit['_source'])
         print("\n")
 
-    return await basicHandler()
+    return await basicHandler()'''
 
