@@ -1,9 +1,9 @@
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends
 
 from fastapi.security import OAuth2PasswordBearer
 
-from Core.UserStatus import UserStatus
-from Core.statusProtected import statusProtected
+from Core.Shared.UserStatus import UserStatus
+from Services.authServices import statusProtected
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
