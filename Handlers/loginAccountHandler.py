@@ -1,9 +1,9 @@
 from fastapi import  status
 from fastapi.security import OAuth2PasswordBearer
 from starlette.responses import JSONResponse
-from Core.createJwtToken import createJwtToken
-from Core.getAccountsWithFilter import getAccountsWithFilter
-from Core.hashString import hashString
+from Services.authServices import createJwtToken
+from Core.Shared.DatabaseOperations import Database
+from Services.authServices import hashString
 
 
 # OAuth2PasswordBearer for handling token authentication
@@ -15,7 +15,7 @@ async def loginAccountHandler(email, password):
 
         upperCaseEmail = email.lower()
 
-        usersResponse = getAccountsWithFilter({"email":upperCaseEmail})
+        usersResponse = Database.getAccountsWithFilter({"email":upperCaseEmail})
 
         # Check if the user exists
         if (usersResponse["message"] == "Accounts retrieved successfully"):

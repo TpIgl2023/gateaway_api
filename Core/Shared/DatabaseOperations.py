@@ -3,11 +3,11 @@ import json
 from Core.Environment.databaseServiceEnv import DATABASE_API_URL, DATABASE_SERVICE_API_KEY
 class Database:
     @staticmethod
-    def createUser(user):
+    def createUser(user,account_type="user"):
         response = requests.post(
             url=DATABASE_API_URL + "/accounts/create",
             headers={
-                "account_type": "user",
+                "account_type": account_type,
                 "x-api-key": DATABASE_SERVICE_API_KEY
             },
             data=json.dumps(user),

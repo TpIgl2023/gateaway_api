@@ -1,11 +1,11 @@
 from fastapi import status
 from fastapi.security import OAuth2PasswordBearer
 from starlette.responses import JSONResponse
-from Core.createJwtToken import createJwtToken
-from Core.getAccountsWithFilter import getAccountsWithFilter
-from Core.hashString import hashString
-from Core.fieldsValidation import validations
-from Core.fieldsValidation import errorsTypes
+from Core.Shared.DatabaseOperations import Database
+from Services.authServices import hashString
+from Services.authServices import validations
+from Services.authServices import errorsTypes
+from Services.authServices import createJwtToken
 
 # OAuth2PasswordBearer for handling token authentication
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -21,13 +21,13 @@ async def registerAccountHandler(name,email,password,phone):
         nameIsValid = validations.validate_name(name) 
         errors = []
         if (emailIsValid & passwordIsValid & mobileIsValid & nameIsValid):
-            usersResponse = getAccountsWithFilter({"email":lowerCaseEmail})
+            usersResponse = Database.getAccountsWithFilter({"email":lowerCaseEmail})
             #check if email exists
             users = usersResponse["accounts"]
             if (len(users) == 0):
                 # generating the token 
-                #! token_data = {"email": lowerCaseEmail,"status": "status"}
-                #! jwt_token = createJwtToken(token_data)
+                token_data = {"email": lowerCaseEmail,"status": "status"}
+                jwt_token = createJwtToken(token_data)
                 password = hashString(password)
                 user = {
                     "name": name,
@@ -35,13 +35,14 @@ async def registerAccountHandler(name,email,password,phone):
                     "password": password,
                     "phone": phone
                 }
+                Database.createUser(user)
+                del user["password"]
                 response = JSONResponse(
                     content={"success":True,"message":"User created succesfully","user":user},
-                    #! headers={"Authorization": f"Bearer {jwt_token}"},
-                    headers={"Authorization": f"Bearer"},
+                    headers={"Authorization": f"Bearer {jwt_token}"}
                     )
-                del user["password"]
-                #! response.set_cookie(key="Authorization", value=jwt_token,httponly=True)
+
+                response.set_cookie(key="Authorization", value=jwt_token,httponly=True)
                 return response
             else:
                 return JSONResponse(
