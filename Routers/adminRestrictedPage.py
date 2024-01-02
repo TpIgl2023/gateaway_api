@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from Handlers.adminRestrictedPageHandler import adminRestrictedPageHandler
-from Middlwares.isAdminProtected import isAdminProtected
+from Middlwares.AuthProtectionMiddlewares import isAdminProtected
 
 adminRouter = APIRouter()
 
