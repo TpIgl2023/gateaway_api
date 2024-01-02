@@ -18,7 +18,7 @@ def _build_document_index(article: Article):
     index = article.__dict__()
 
     # declare fields to be removed from the index
-    to_remove = ['abstract', 'institutions', 'URL', 'bibliography', 'publishingDate']
+    to_remove = ['abstract', 'institutions', 'pdfUrl', 'bibliography', 'publishingDate']
 
     # remove fields from the index
     for field in to_remove:
