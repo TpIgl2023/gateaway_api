@@ -28,6 +28,7 @@ def _build_document_index(article: Article):
     # index is ready
     return index
 
+
 def search_articles(query: str):
     # Search across all fields in all indices
     search_query = {
@@ -37,7 +38,8 @@ def search_articles(query: str):
                 'fields': ['*'],
                 'type': 'best_fields'
             }
-        }
+        },
+        # 'min_score': 0.2,
     }
 
     # Search the index

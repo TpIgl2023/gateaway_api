@@ -26,3 +26,8 @@ async def get_article_by_id_handler(article_id: int):
 async def delete_article_handler(article_id: int):
     return await articles_handler.delete_article_handler(article_id)
 
+
+@articlesRouter.get("/")
+async def get_articles_handler(request: Request):
+    return await articles_handler.search_articles_handler(request)
+

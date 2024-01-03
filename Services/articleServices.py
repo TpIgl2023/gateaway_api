@@ -2,6 +2,7 @@ from Core.Exceptions.databaseException import DatabaseException
 from Models.Article import Article
 from Core.Configuration.databaseConfiguration import articlesDatabaseClient
 from Services.elasticsearchServices import index_article, remove_article_from_index, search_articles
+import json
 
 
 def _fields_rename_for_database(article: dict):
@@ -95,3 +96,31 @@ async def get_article_by_id(article_id: int):
         raise DatabaseException(response.json(), response.status_code)
 
     return response.json()["article"]
+
+
+async def search_articles_by_query(query: str):
+    # Search the articles in elastic search
+    total, articles_ids_string = search_articles(query)
+
+    if total == 0:
+        return None
+
+    # Convert the articles ids to a list of integers
+    articles_ids = [int(article_id) for article_id in articles_ids_string]
+    # Get the articles from the database
+    response = await articlesDatabaseClient.request(
+        method="GET",
+        url="/getArticlesByIds",
+        content=json.dumps({
+        "ids": articles_ids
+        })
+    )
+
+
+    articles = response.json()["articles"]
+
+    if len(articles) == 0:
+        return None
+
+    return articles
+
