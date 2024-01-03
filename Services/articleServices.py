@@ -5,17 +5,21 @@ from Services.elasticsearchServices import index_article, remove_article_from_in
 
 
 def _fields_rename_for_database(article: dict):
-    article["resume"] = article["abstract"]
-    article.pop("abstract")
+    if "abstract" in article:
+        article["resume"] = article["abstract"]
+        article.pop("abstract")
 
-    article["pdfUrl"] = article["URL"]
-    article.pop("URL")
+    if "URL" in article:
+        article["pdfUrl"] = article["URL"]
+        article.pop("URL")
 
-    article["references"] = article["bibliography"]
-    article.pop("bibliography")
+    if "bibliography" in article:
+        article["references"] = article["bibliography"]
+        article.pop("bibliography")
 
-    article["publishDate"] = article["publishingDate"]
-    article.pop("publishingDate")
+    if "publishingDate" in article:
+        article["publishDate"] = article["publishingDate"]
+        article.pop("publishingDate")
 
 
 async def _upload_article_to_database(article: Article):
@@ -40,3 +44,26 @@ async def upload_article(article: Article):
     index_article(article, uploaded_article["id"])
 
     return uploaded_article
+
+
+async def _update_article_in_database(updated_info: dict, article_id: int):
+    # Rename the fields to match the database
+    _fields_rename_for_database(updated_info)
+
+    # Include the id in the json
+    updated_info["id"] = article_id
+
+    response = await articlesDatabaseClient.put("/update", json=updated_info)
+    if response.status_code != 200:
+        raise DatabaseException(response.json()["message"], response.status_code)
+
+    return response.json()["article"]
+
+
+async def modify_article(updated_info: dict, article_id: int):
+    # Update the article in the database
+    updated_article = await _update_article_in_database(updated_info, article_id)
+    # Update the article index in elasticsearch
+    index_article(Article.from_dict(updated_article), updated_article["id"])
+
+    return updated_article
