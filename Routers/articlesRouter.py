@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
 import Handlers.articlesHandlers as articles_handler
 
 
@@ -15,4 +15,14 @@ async def upload_article_handler(request: Request):
 @articlesRouter.put("/{article_id}")
 async def modify_article_handler(article_id: int, request: Request):
     return await articles_handler.modify_article_handler(request, article_id)
+
+
+@articlesRouter.get("/{article_id}")
+async def get_article_by_id_handler(article_id: int):
+    return await articles_handler.get_article_by_id_handler(article_id)
+
+
+@articlesRouter.delete("/{article_id}")
+async def delete_article_handler(article_id: int):
+    return await articles_handler.delete_article_handler(article_id)
 

@@ -30,7 +30,7 @@ async def _upload_article_to_database(article: Article):
 
     response = await articlesDatabaseClient.post("/create", json=article_json)
     if response.status_code != 200:
-        raise DatabaseException(response.json()["message"], response.status_code)
+        raise DatabaseException(response.json(), response.status_code)
 
     return response.json()["article"]
 
@@ -55,7 +55,7 @@ async def _update_article_in_database(updated_info: dict, article_id: int):
 
     response = await articlesDatabaseClient.put("/update", json=updated_info)
     if response.status_code != 200:
-        raise DatabaseException(response.json()["message"], response.status_code)
+        raise DatabaseException(response.json(), response.status_code)
 
     return response.json()["article"]
 
@@ -67,3 +67,31 @@ async def modify_article(updated_info: dict, article_id: int):
     index_article(Article.from_dict(updated_article), updated_article["id"])
 
     return updated_article
+
+
+async def _remove_article_from_database(article_id: int):
+    response = await articlesDatabaseClient.delete(
+        "/delete",
+        headers=articlesDatabaseClient.headers.update({"id": str(article_id)}))
+    if response.status_code != 200:
+        raise DatabaseException(response.json(), response.status_code)
+
+
+async def delete_article(article_id: int):
+    # Remove the article from the database
+    await _remove_article_from_database(article_id)
+
+    # Remove the article from the index
+    remove_article_from_index(article_id)
+
+
+async def get_article_by_id(article_id: int):
+    response = await articlesDatabaseClient.get(
+        "/" + str(article_id),
+    )
+    if response.status_code == 404:
+        return None
+    if response.status_code != 200:
+        raise DatabaseException(response.json(), response.status_code)
+
+    return response.json()["article"]
