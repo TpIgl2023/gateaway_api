@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 
-from Routers.adminRestrictedPage import adminRouter
+from Routers.adminRouter import adminRouter
 from Routers.authRouter import authRouter
 from Routers.rootRouter import rootRouter
 from Routers.root_router import root_router
