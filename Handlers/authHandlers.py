@@ -49,7 +49,7 @@ async def loginAccountHandler(email, password):
 
 
 
-async def registerAccountHandler(name, email, password, phone):
+async def registerUserAccountHandler(name, email, password, phone):
     try:
         lowerCaseEmail = email.lower()
         # check if the fields are valid
@@ -69,7 +69,7 @@ async def registerAccountHandler(name, email, password, phone):
                 password = hashString(password)
                 user = {
                     "name": name,
-                    "email": email,
+                    "email": lowerCaseEmail,
                     "password": password,
                     "phone": phone
                 }
