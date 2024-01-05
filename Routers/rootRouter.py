@@ -6,5 +6,5 @@ rootRouter = APIRouter()
 
 @rootRouter.get("/")
 async def basicHandler():
-    return await basicHandler()
+    return { "message": "Hello World"}
 
