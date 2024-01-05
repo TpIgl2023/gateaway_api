@@ -1,8 +1,10 @@
+import concurrent
+
 from starlette import status
 from starlette.responses import JSONResponse
 from Core.Environment.pdfServiceEnv import PDF_SERVICE_API_KEY, PDF_SERVICE_API_URL
 from Core.Environment.databaseServiceEnv import DATABASE_SERVICE_API_KEY, DATABASE_API_URL
-from Services.adminServices import is_url, is_int, isModerator
+from Services.adminServices import is_url, is_int, isModerator, getDriveFilesId, GoogleDriveHandler, processMultiplePdf
 from Core.Shared.DatabaseOperations import Database
 import requests
 import json
@@ -20,6 +22,29 @@ async def ExtractFromPdf(URL):
         headers = {'x-api-key': PDF_SERVICE_API_KEY}
 
         params = {'URL': URL}
+
+        response = requests.get(PDF_SERVICE_API_URL, headers=headers, params=params)
+
+        return response.json()
+
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "message": "Error while extracting data from PDF",
+                "error": str(e)
+            })
+
+async def ExtractFromPdfs(URLs):
+    try:
+        if not isinstance(URLs, list):
+            return JSONResponse(
+                status_code=400,
+                content={"message": "URLs is not valid"})
+
+        headers = {'x-api-key': PDF_SERVICE_API_KEY}
+
+        params = URLs
 
         response = requests.get(PDF_SERVICE_API_URL, headers=headers, params=params)
 
@@ -220,5 +245,94 @@ async def editModeratorAccountHandler(updated_user):
                 "message": "Error while updating moderator",
                 "error": str(e)
             })
+
+
+async def extractFromDrive(URL):
+    try:
+        if not is_url(URL):
+            return JSONResponse(
+                status_code=400,
+                content={"message": "URL is not valid"})
+
+
+        # Extract the id of the google drive folder
+        folderId = GoogleDriveHandler.extractFolderId(URL)
+
+        # Use the ID to extract the id of the files
+        ids = getDriveFilesId(folderId)
+
+        # Extract the text from the files
+        downloadLinkArray = []
+        for id in ids:
+            downloadLinkArray.append(GoogleDriveHandler.extractGoogleDownloadLink(id))
+
+        extractedArticles = []
+        nbArticles = 0
+
+        for downloadLink in downloadLinkArray:
+            try :
+                article = await ExtractFromPdf(downloadLink)
+                extractedArticles.append(article)
+                print(article)
+                nbArticles += 1
+            except Exception as e:
+                print(e)
+                pass
+
+
+        response = {
+            "success": True,
+            "nbArticlesExtracted": nbArticles,
+            "articles": extractedArticles
+        }
+
+        print(response)
+
+        return response
+
+
+    except Exception as e:
+       return JSONResponse(
+            status_code=500,
+            content={
+                "message": "Error while extracting data from PDF",
+                "error": str(e)
+            })
+
+
+async def extractDownloadLinksFromDrive(URL):
+    try:
+        if not is_url(URL):
+            return JSONResponse(
+                status_code=400,
+                content={"message": "URL is not valid"})
+
+        # Extract the id of the google drive folder
+        folderId = GoogleDriveHandler.extractFolderId(URL)
+
+        # Use the ID to extract the id of the files
+        ids = getDriveFilesId(folderId)
+
+        # Extract the text from the files
+        downloadLinkArray = []
+        for id in ids:
+            downloadLinkArray.append(GoogleDriveHandler.extractGoogleDownloadLink(id))
+
+        response = {"success": True,
+                    "downloadLinks": downloadLinkArray}
+
+        return response
+
+
+
+    except Exception as e:
+       return JSONResponse(
+            status_code=500,
+            content={
+                "message": "Error while extracting data from PDF",
+                "error": str(e)
+            })
+
+
 
 
