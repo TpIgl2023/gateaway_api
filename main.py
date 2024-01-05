@@ -7,6 +7,7 @@ from Routers.rootRouter import rootRouter
 from Routers.root_router import root_router
 from Routers.articlesRouter import articlesRouter
 from Routers.profileRouter import profileRouter
+from Routers.updateDataRouter import updateDataRouter
 
 
 app = FastAPI()
@@ -18,6 +19,7 @@ app.include_router(rootRouter)
 app.include_router(adminRouter, prefix="/admin")
 app.include_router(profileRouter, prefix="/profile")
 app.include_router(articlesRouter, prefix="/articles")
+app.include_router(updateDataRouter, prefix="/updatedata")
 
 
 # uvicorn.run(app, host="0.0.0.0", port=8000)

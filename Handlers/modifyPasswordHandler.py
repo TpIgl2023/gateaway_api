@@ -32,7 +32,7 @@ async def modifyPasswordHandler(email, oldPassword, newPassword):
                                         "message" : f'new password is invalid with errors {errorMessage}'}
                             )
                         #! ********** Change the oldPassword to newPasswordHash in data set here *************
-                        del user["password"]
+                        #del user["password"]
                         userId = user["id"]
                         newPasswordHash = hashString(newPassword)
                         response = Database.updatePassword(userId, newPasswordHash)

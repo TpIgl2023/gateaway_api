@@ -1,5 +1,7 @@
 from fastapi import APIRouter
 from Handlers.profileHandler import deleteUserHandler
+from Handlers.modifyPasswordHandler import modifyPasswordHandler
+from Handlers.modifyPersonalInfoHandler import modifyPersonalInfoHandler
 from fastapi import Depends, FastAPI, HTTPException, Request
 
 from fastapi.security import OAuth2PasswordBearer

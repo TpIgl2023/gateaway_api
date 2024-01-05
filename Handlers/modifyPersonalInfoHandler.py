@@ -12,13 +12,13 @@ async def modifyPersonalInfoHandler(name, email, phone):
     try:
         hasError = False
         errorMessage = []
-        if (validations.validate_name(name)):
+        if (validations.validate_name(name) == False):
             hasError = True
             errorMessage.append(errorsTypes.nameInvalid)
-        if (validations.validate_email_syntax(email)):
+        if (validations.validate_email_syntax(email) == False):
             hasError = True
             errorMessage.append(errorsTypes.emailInvalid)
-        if (validations.validate_mobile(phone)):
+        if (validations.validate_mobile(phone) == False):
             hasError = True
             errorMessage.append(errorsTypes.mobileInvalid)
         
@@ -31,7 +31,6 @@ async def modifyPersonalInfoHandler(name, email, phone):
         usersResponse = Database.getAccountsWithFilter({"email":email})
         users = usersResponse["accounts"]
         updated_user = users[0]
-        
         response = Database.updateUser(updated_user)
         
         return response
