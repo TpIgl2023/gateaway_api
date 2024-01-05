@@ -1,3 +1,4 @@
+from Core.Configuration.elasticsearchConfiguration import es as elasticsearch
 """ from Core.Configuration.elasticsearchConfiguration import es
 from Core.Environment.elasticsearchEnv import ARTICLE_INDEX
 from Models.Article import Article
@@ -7,18 +8,17 @@ def index_article(article: Article, article_id: int):
     # Building the article index
     index = _build_document_index(article)
 
-    # Index the document
-    es.index(index=ARTICLE_INDEX, document=index, id=article_id)
+    elasticsearch.index(index=ARTICLE_INDEX, document=index, id=article_id)
 
     # Refresh the index to make the document available for search immediately (optional)
-    es.indices.refresh(index=index)
+    elasticsearch.indices.refresh(index=ARTICLE_INDEX)
 
 
 def _build_document_index(article: Article):
     index = article.__dict__()
 
     # declare fields to be removed from the index
-    to_remove = ['abstract', 'institutions', 'keywords', 'URL', 'bibliography', 'publishingDate']
+    to_remove = ['abstract', 'institutions', 'pdfUrl', 'bibliography', 'publishingDate']
 
     # remove fields from the index
     for field in to_remove:
@@ -38,11 +38,12 @@ def search_articles(query: str):
                 'fields': ['*'],
                 'type': 'best_fields'
             }
-        }
+        },
+        # 'min_score': 0.2,
     }
 
     # Search the index
-    search_results = es.search(index=ARTICLE_INDEX, body=search_query)
+    search_results = elasticsearch.search(index=ARTICLE_INDEX, body=search_query)
 
     # Get the number of results
     total = search_results['hits']['total']['value']
@@ -57,4 +58,3 @@ def search_articles(query: str):
 def remove_article_from_index(article_id: int):
     # Remove the article from the index
     es.delete(index=ARTICLE_INDEX, id=article_id)
- """

@@ -1,15 +1,26 @@
 class Article:
 
-    def __init__(self):
-        self.title = None
-        self.abstract = None
-        self.authors = None
-        self.institutions = None
-        self.keywords = None
-        self.text = None
-        self.URL = None
-        self.bibliography = None
-        self.publishingDate = None
+    def __init__(
+            self,
+            title = None,
+            abstract = None,
+            authors = None,
+            institutions = None,
+            keywords = None,
+            text = None,
+            URL = None,
+            bibliography = None,
+            publishingDate = None
+    ):
+        self.title = title
+        self.abstract = abstract
+        self.authors = authors
+        self.institutions = institutions
+        self.keywords = keywords
+        self.text = text
+        self.URL = URL
+        self.bibliography = bibliography
+        self.publishingDate = publishingDate
 
     def __str__(self):
 
@@ -34,5 +45,21 @@ class Article:
             "bibliography": self.bibliography,
             "publishingDate": self.publishingDate
         }
+
+    @staticmethod
+    def from_dict(article_dict: dict):
+        return Article(
+            title=article_dict["title"],
+            abstract=article_dict["abstract"] if "abstract" in article_dict else article_dict["resume"],
+            authors=article_dict["authors"],
+            institutions=article_dict["institutions"],
+            keywords=article_dict["keywords"],
+            text=article_dict["text"],
+            URL=article_dict["URL"] if "URL" in article_dict else article_dict["pdfUrl"],
+            bibliography=article_dict["bibliography"] if "bibliography" in article_dict else article_dict["references"],
+            publishingDate=article_dict["publishingDate"] if "publishingDate" in article_dict else article_dict["publishDate"]
+        )
+
+
 
 
