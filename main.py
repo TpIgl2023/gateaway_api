@@ -19,6 +19,8 @@ app.include_router(rootRouter)
 app.include_router(adminRouter, prefix="/admin")
 app.include_router(profileRouter, prefix="/profile")
 app.include_router(articlesRouter, prefix="/articles")
+
+
 app.include_router(updateDataRouter, prefix="/updatedata")
 
 

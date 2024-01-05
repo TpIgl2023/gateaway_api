@@ -53,14 +53,3 @@ class Database:
         URL = DATABASE_API_URL + "/accounts/moderators"
 
         return requests.get(URL, headers=headers)
-    
-    @staticmethod
-    def updatePassword(userId,password):
-        response = requests.put(
-            url=DATABASE_API_URL + "/accounts/updatepassword",
-            headers={
-                "x-api-key": DATABASE_SERVICE_API_KEY
-            },
-            data=json.dumps(userId,password)
-        )
-        return response.json

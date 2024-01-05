@@ -7,12 +7,25 @@ from Core.Shared.DatabaseOperations import Database
 import requests
 import json
 
+
 from Services.authServices import validations, createJwtToken, hashString, errorsTypes
 
-#! imports added now
+import jwt
+from Core.Environment.env import HASHING_SECRET_KEY, HASH_ALGORITHM
 
-async def modifyPasswordHandler(email, oldPassword, newPassword):
+
+async def modifyPasswordHandler(userToken, email, oldPassword, newPassword):
     try:
+        """
+        payload = jwt.decode(userToken, HASHING_SECRET_KEY, algorithms=[HASH_ALGORITHM])
+        emailTest: str = payload.get("email")
+
+        if emailTest == None:
+            raise Exception("Invalid token")        
+        """
+        if (oldPassword == newPassword):
+            raise Exception("The old and new password must be different")
+        
         usersResponse = Database.getAccountsWithFilter({"email":email})
         if (usersResponse["message"] == "Accounts retrieved successfully"):
             users = usersResponse["accounts"]
@@ -31,11 +44,11 @@ async def modifyPasswordHandler(email, oldPassword, newPassword):
                                 content={"success" : False,
                                         "message" : f'new password is invalid with errors {errorMessage}'}
                             )
-                        #! ********** Change the oldPassword to newPasswordHash in data set here *************
-                        #del user["password"]
-                        userId = user["id"]
+                        
                         newPasswordHash = hashString(newPassword)
-                        response = Database.updatePassword(userId, newPasswordHash)
+                        updated_user = users[0]
+                        updated_user["password"] = newPasswordHash
+                        response = Database.updateUser(updated_user)
                         return response
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,

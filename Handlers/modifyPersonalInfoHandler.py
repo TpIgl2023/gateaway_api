@@ -1,15 +1,21 @@
-from starlette import status
 from starlette.responses import JSONResponse
-from Core.Environment.databaseServiceEnv import DATABASE_SERVICE_API_KEY, DATABASE_API_URL
 from Core.Shared.DatabaseOperations import Database
-import requests
-import json
+
 
 from Services.authServices import validations, createJwtToken, errorsTypes
 
 
-async def modifyPersonalInfoHandler(name, email, phone):
+
+async def modifyPersonalInfoHandler(userToken, name, email, phone):
     try:
+        """
+        payload = jwt.decode(userToken, HASHING_SECRET_KEY, algorithms=[HASH_ALGORITHM])
+        emailTest: str = payload.get("email")
+
+        if emailTest == None:
+            raise Exception("Invalid token")
+        """
+        
         hasError = False
         errorMessage = []
         if (validations.validate_name(name) == False):
@@ -30,27 +36,24 @@ async def modifyPersonalInfoHandler(name, email, phone):
         
         usersResponse = Database.getAccountsWithFilter({"email":email})
         users = usersResponse["accounts"]
-        updated_user = users[0]
-        response = Database.updateUser(updated_user)
+        if (len(users) > 0):
+            updated_user = users[0]
+            updated_user["name"] = name
+            updated_user["email"] = email
+            updated_user["phone"] = phone
+            response = Database.updateUser(updated_user)
+            return response
         
-        return response
-        """
-        return JSONResponse(
-            status_code=200,
-            content={
-                "success":True,
-                "message":"Password updated successfully"
-            }
-        )
+        return JSONResponse(status_code=400,
+                            content={
+                                "success" : "false",
+                                "message": f'Error when updating the user data : no users found with {email}'
+                            })
         
-        """
-        
-
-
     except Exception as e:
         return JSONResponse(status_code=500,
             content={
-                "message": "Error while updating moderator",
+                "message": "Error while updating user",
                 "error": str(e)
             })
 
