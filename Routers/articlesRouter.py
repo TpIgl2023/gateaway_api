@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Request, Depends
 import Handlers.articlesHandlers as articles_handler
-from Middlwares.isAdminProtected import isAdminProtected
-from Middlwares.isModeratorProtected import isModeratorProtected
+from Middlwares.AuthProtectionMiddlewares import isAdminProtected, isModeratorProtected
 
 
 articlesRouter = APIRouter()

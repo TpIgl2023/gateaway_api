@@ -110,17 +110,6 @@ def validate_password(password):
     return True
 
 
-"""
-def validate_mobile(value):
-    Raise a ValidationError if the value looks like a mobile telephone number.
-    rule = re.compile(r'/^[0-9]{10,14}$/')
-
-    if not rule.search(value):
-        msg = u"Invalid mobile number."
-        raise ValidationError(msg)
-
-"""
-
 def validate_mobile(mobile):
     return carrier._is_mobile(number_type(phonenumbers.parse(mobile)))
 
