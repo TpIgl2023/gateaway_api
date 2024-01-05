@@ -1,5 +1,5 @@
 from Core.Configuration.elasticsearchConfiguration import es as elasticsearch
-""" from Core.Configuration.elasticsearchConfiguration import es
+from Core.Configuration.elasticsearchConfiguration import es
 from Core.Environment.elasticsearchEnv import ARTICLE_INDEX
 from Models.Article import Article
 
