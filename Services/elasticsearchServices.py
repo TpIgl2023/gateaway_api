@@ -14,7 +14,6 @@ def index_article(article: Article, article_id: int):
 
 
 def _build_document_index(article: Article):
-    print("Building document index")
     index = article.__dict__()
 
     # declare fields to be removed from the index

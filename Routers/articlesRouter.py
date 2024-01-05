@@ -1,19 +1,19 @@
 from fastapi import APIRouter, Request, Depends
 import Handlers.articlesHandlers as articles_handler
+from Middlwares.isAdminProtected import isAdminProtected
+from Middlwares.isModeratorProtected import isModeratorProtected
 
 
 articlesRouter = APIRouter()
 
 
-# TODO: add jwt and admin authentication middleware
 @articlesRouter.post("/")
-async def upload_article_handler(request: Request):
+async def upload_article_handler(request: Request, user: str = Depends(isAdminProtected)):
     return await articles_handler.upload_article_handler(request)
 
 
-# TODO: add jwt and mod authentication middleware
 @articlesRouter.put("/{article_id}")
-async def modify_article_handler(article_id: int, request: Request):
+async def modify_article_handler(article_id: int, request: Request, user: str = Depends(isModeratorProtected)):
     return await articles_handler.modify_article_handler(request, article_id)
 
 
@@ -23,7 +23,7 @@ async def get_article_by_id_handler(article_id: int):
 
 
 @articlesRouter.delete("/{article_id}")
-async def delete_article_handler(article_id: int):
+async def delete_article_handler(article_id: int, user: str = Depends(isModeratorProtected)):
     return await articles_handler.delete_article_handler(article_id)
 
 

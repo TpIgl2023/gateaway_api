@@ -23,6 +23,7 @@ async def loginAccountHandler(email, password):
             if len(users) != 0:
                 for user in users:
                     if user["password"] == password:
+                        print("user found")
                         del user["password"]
                         token_data = {"email": user["email"],"status": user["status"]}
                         jwt_token = createJwtToken(token_data)
