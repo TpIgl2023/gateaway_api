@@ -1,4 +1,4 @@
-from Core.Configuration.elasticsearchConfiguration import es
+""" from Core.Configuration.elasticsearchConfiguration import es
 from Core.Environment.elasticsearchEnv import ARTICLE_INDEX
 from Models.Article import Article
 
@@ -57,3 +57,4 @@ def search_articles(query: str):
 def remove_article_from_index(article_id: int):
     # Remove the article from the index
     es.delete(index=ARTICLE_INDEX, id=article_id)
+ """

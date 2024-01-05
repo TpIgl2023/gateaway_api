@@ -1,4 +1,4 @@
-from elasticsearch import Elasticsearch
+""" from elasticsearch import Elasticsearch
 import Core.Environment.elasticsearchEnv as env
 
 # Create Elasticsearch client with default 'elastic' credentials
@@ -15,3 +15,4 @@ if es.ping():
     print("Connected to Elasticsearch")
 else:
     raise Exception("Connection to Elasticsearch failed")
+ """

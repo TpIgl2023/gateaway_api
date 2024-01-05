@@ -1,4 +1,4 @@
-import os
+""" import os
 
 # Elasticsearch environment variables
 PORT = 32769
@@ -9,4 +9,4 @@ ELASTICSEARCH_CACERAT_PATH = os.path.join(
 ELASTICSEARCH_USERNAME = 'elastic'
 ELASTICSEARCH_PASSWORD = 'BY-VmV-NAKs66AB2YK=e'
 
-ARTICLE_INDEX = 'articles'
+ARTICLE_INDEX = 'articles' """

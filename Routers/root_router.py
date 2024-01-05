@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 from Handlers.basicHandler import basicHandler
-from Core.Configuration.elasticsearchConfiguration import es
-
+#! from Core.Configuration.elasticsearchConfiguration import es
 
 root_router = APIRouter()
 
@@ -16,10 +15,10 @@ async def handle_pdf():
     }
 
     # Index the document
-    es.index(index=index_name, document=document, id=1)
+#!    es.index(index=index_name, document=document, id=1)
 
     # Refresh the index to make the document available for search immediately (optional)
-    es.indices.refresh(index=index_name)
+#!    es.indices.refresh(index=index_name)
 
     # String to search
     search_string = 'indexing'
@@ -36,14 +35,14 @@ async def handle_pdf():
     }
 
     # Search the index
-    results = es.search(index=index_name, body=search_query)
+#!    results = es.search(index=index_name, body=search_query)
 
     # Print search results
-    print("Search Results:")
+"""     print("Search Results:")
     for hit in results['hits']['hits']:
         print(f"Document ID: {hit['_id']}, Score: {hit['_score']}")
         print(hit['_source'])
         print("\n")
 
     return await basicHandler()
-
+ """
