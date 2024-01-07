@@ -41,6 +41,9 @@ def isModerator(id):
     moderators = response.json()
     moderators = moderators["moderators"]
 
+    if len(moderators) == 0:
+        return "No moderators found"
+
     isMod = False
     for moderator in moderators:
         if moderator["id"] == id:
