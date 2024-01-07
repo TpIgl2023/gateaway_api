@@ -14,28 +14,24 @@ async def deleteUserHandler(userToken):
     try:
 
         payload = jwt.decode(userToken, HASHING_SECRET_KEY, algorithms=[HASH_ALGORITHM])
-        email: str = payload.get("email")
+        id: str = payload.get("id")
 
-        if email == None:
+        if id == None:
             raise Exception("Invalid token")
 
-        email = email.lower()
 
-        userResponse = Database.getAccountsWithFilter({"email":email})
-        deleteAccouts = []
-        if (userResponse["message"] == "Accounts retrieved successfully"):
-            users = userResponse["accounts"]
-            if len(users) != 0:
-                for user in users:
-                    Database.deleteUser(str(user["id"]))
-                    deleteAccouts.append(user["id"])
-            return JSONResponse(
-                status_code=status.HTTP_200_OK,
-                content={
-                    "success": True,
-                    "message": "User deleted successfully",
-                    "deletedAccountsId": deleteAccouts
-                })
+        dbResponse = Database.deleteUser(id)
+        if (dbResponse["message"] != "Account deleted successfully"):
+            raise Exception(dbResponse["message"])
+
+
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content={
+                "success": True,
+                "message": "User deleted successfully",
+                "deletedAccountsId": id
+            })
 
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -44,13 +40,6 @@ async def deleteUserHandler(userToken):
                 "message": "Invalid email or password"
             })
 
-
-
-        response = {
-            "message": user
-        }
-
-        return response
     except Exception as e:
         return JSONResponse(
             status_code=500,

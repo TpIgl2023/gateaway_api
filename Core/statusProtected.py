@@ -30,15 +30,15 @@ def statusProtected(token,status):
     try:
         payload = jwt.decode(token, HASHING_SECRET_KEY, algorithms=[HASH_ALGORITHM])
         print(payload)
-        email: str = payload.get("email")
+        id: str = payload.get("id")
         user_status : str = payload.get("status")
         if user_status != status:
             raise privilege_exception
-        if email == None:
+        if id == None:
             raise credentials_exception
 
         # Else , continue. (Don't raise any exception)
-        return email
+        return id
     except HTTPException as e:
         raise e
     except Exception:
