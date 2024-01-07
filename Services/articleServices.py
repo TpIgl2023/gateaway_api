@@ -72,7 +72,9 @@ async def modify_article(updated_info: dict, article_id: int):
 async def _remove_article_from_database(article_id: int):
     response = await articlesDatabaseClient.delete(
         "/delete",
-        headers=articlesDatabaseClient.headers.update({"id": str(article_id)}))
+        headers=articlesDatabaseClient.headers.update({
+            "id": str(article_id)
+        }))
     if response.status_code != 200:
         raise DatabaseException(response.json(), response.status_code)
 
@@ -115,7 +117,6 @@ async def search_articles_by_query(query: str):
         })
     )
 
-
     articles = response.json()["articles"]
 
     if len(articles) == 0:
@@ -123,3 +124,43 @@ async def search_articles_by_query(query: str):
 
     return articles
 
+
+def add_article_to_favorites(user_id: int, article_id: int):
+    response = articlesDatabaseClient.post(
+        "/addFavorite",
+        headers=articlesDatabaseClient.headers.update({
+            "user_id": str(user_id),
+            "article_id": str(article_id)
+        }),
+    )
+    if response.status_code != 200:
+        raise DatabaseException(response.json(), response.status_code)
+
+    return response.json()["article"]
+
+
+def remove_article_from_favorites(user_id: int, article_id: int):
+    response = articlesDatabaseClient.delete(
+        "/removeFavorite",
+        headers=articlesDatabaseClient.headers.update({
+            "user_id": str(user_id),
+            "article_id": str(article_id)
+        }),
+    )
+    if response.status_code != 200:
+        raise DatabaseException(response.json(), response.status_code)
+
+    return response.json()["article"]
+
+
+def get_user_favorites(user_id: int):
+    response = articlesDatabaseClient.get(
+        "/getFavorites",
+        headers=articlesDatabaseClient.headers.update({
+            "user_id": str(user_id)
+        }),
+    )
+    if response.status_code != 200:
+        raise DatabaseException(response.json(), response.status_code)
+
+    return response.json()["articles"]
