@@ -9,6 +9,7 @@ authRouter = APIRouter()
 
 @authRouter.post("/login")
 async def loginAccount(login_data: LoginRequest):
+
     email = login_data.email
     password = login_data.password
     return await loginAccountHandler(email, password)
