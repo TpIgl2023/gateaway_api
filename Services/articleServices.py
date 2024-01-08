@@ -72,7 +72,9 @@ async def modify_article(updated_info: dict, article_id: int):
 async def _remove_article_from_database(article_id: int):
     response = await articlesDatabaseClient.delete(
         "/delete",
-        headers=articlesDatabaseClient.headers.update({"id": str(article_id)}))
+        headers=articlesDatabaseClient.headers.update({
+            "id": str(article_id)
+        }))
     if response.status_code != 200:
         raise DatabaseException(response.json(), response.status_code)
 
@@ -85,9 +87,12 @@ async def delete_article(article_id: int):
     remove_article_from_index(article_id)
 
 
-async def get_article_by_id(article_id: int):
+async def get_article_by_id(article_id: int, user_id: int = None):
     response = await articlesDatabaseClient.get(
         "/" + str(article_id),
+        headers=articlesDatabaseClient.headers.update({
+            "user_id": str(user_id)
+        }) if user_id is not None else articlesDatabaseClient.headers
     )
     if response.status_code == 404:
         return None
@@ -97,7 +102,7 @@ async def get_article_by_id(article_id: int):
     return response.json()["article"]
 
 
-async def search_articles_by_query(query: str):
+async def search_articles_by_query(query: str, user_id: str = None):
     # Search the articles in elastic search
     total, articles_ids_string = search_articles(query)
 
@@ -106,20 +111,81 @@ async def search_articles_by_query(query: str):
 
     # Convert the articles ids to a list of integers
     articles_ids = [int(article_id) for article_id in articles_ids_string]
+
     # Get the articles from the database
     response = await articlesDatabaseClient.request(
         method="GET",
         url="/getArticlesByIds",
         content=json.dumps({
-        "ids": articles_ids
-        })
+            "ids": articles_ids
+        }),
+        headers=articlesDatabaseClient.headers.update({
+            "user_id": str(user_id)
+        }) if user_id is not None else articlesDatabaseClient.headers
     )
-
 
     articles = response.json()["articles"]
 
     if len(articles) == 0:
         return None
-
     return articles
 
+
+async def add_article_to_favorites(user_id: int, article_id: int):
+    response = await articlesDatabaseClient.post(
+        "/addFavorite",
+        headers=articlesDatabaseClient.headers.update({
+            "user_id": str(user_id),
+            "article_id": str(article_id)
+        }),
+    )
+    if response.status_code != 200:
+        raise DatabaseException(response.json(), response.status_code)
+
+    return response.json()["article"]
+
+
+async def remove_article_from_favorites(user_id: int, article_id: int):
+    response = await articlesDatabaseClient.delete(
+        "/removeFavorite",
+        headers=articlesDatabaseClient.headers.update({
+            "user_id": str(user_id),
+            "article_id": str(article_id)
+        }),
+    )
+    if response.status_code != 200:
+        raise DatabaseException(response.json(), response.status_code)
+
+    return response.json()["article"]
+
+
+async def get_user_favorites(user_id: int):
+    response = await articlesDatabaseClient.get(
+        "/getFavorites",
+        headers=articlesDatabaseClient.headers.update({
+            "user_id": str(user_id)
+        }),
+    )
+    if response.status_code != 200:
+        raise DatabaseException(response.json(), response.status_code)
+
+    if len(response.json()["articles"]) == 0:
+        return None
+
+    return response.json()["articles"]
+
+
+async def get_articles(user_id: int = None):
+    response = await articlesDatabaseClient.get(
+        "/getArticles",
+        headers=articlesDatabaseClient.headers.update({
+            "user_id": str(user_id)
+        }) if user_id is not None else articlesDatabaseClient.headers
+    )
+    if response.status_code != 200:
+        raise DatabaseException(response.json(), response.status_code)
+
+    if len(response.json()["articles"]) == 0:
+        return None
+
+    return response.json()["articles"]

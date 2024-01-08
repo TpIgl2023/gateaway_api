@@ -12,6 +12,9 @@ async def loginAccountHandler(email, password):
     try:
         password = hashString(password)
 
+        # TODO: Remove this line after testing
+        password = "08419aa218f5b405d4499434ca899aeaa0ff049e27e915a02d4ea7645d9f8722"
+
         upperCaseEmail = email.lower()
 
         usersResponse = Database.getAccountsWithFilter({"email":upperCaseEmail})
