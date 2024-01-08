@@ -1,55 +1,51 @@
-import requests
 import json
-from Core.Environment.databaseServiceEnv import DATABASE_API_URL, DATABASE_SERVICE_API_KEY
+from Core.Configuration.databaseConfiguration import articlesDatabaseClient, accountsDatabaseClient
+
+
 class Database:
     @staticmethod
     def createUser(user, accountType="user"):
-        response = requests.post(
-            url=DATABASE_API_URL + "/accounts/create",
-            headers={
-                "account_type": accountType,
-                "x-api-key": DATABASE_SERVICE_API_KEY
-            },
+
+        response = accountsDatabaseClient.post(
+            url="/create",
+            headers=articlesDatabaseClient.headers.update({
+                "account_type": accountType
+            }),
             data=json.dumps(user),
         )
         return response.json()
 
     @staticmethod
     def getAccountsWithFilter(user):
-        response = requests.get(
-            url=DATABASE_API_URL + "/accounts/getAccounts",
-            headers={
-                "x-api-key": DATABASE_SERVICE_API_KEY
-            },
+
+        response = accountsDatabaseClient.get(
+            url="/getAccounts",
             data=json.dumps(user),
         )
+
         return response.json()
 
     @staticmethod
-    def deleteUser(id):
-        response = requests.delete(
-            url=DATABASE_API_URL + "/accounts/delete",
-            headers={
-                "x-api-key": DATABASE_SERVICE_API_KEY,
-                "id": id
-            }
+    def deleteUser(user_id):
+        response = accountsDatabaseClient.delete(
+            url="/delete",
+            headers=accountsDatabaseClient.headers.update({
+                "id": user_id
+            })
         )
         return response.json()
 
     @staticmethod
     def updateUser(user):
-        response = requests.put(
-            url=DATABASE_API_URL + "/accounts/update",
-            headers={
-                "x-api-key": DATABASE_SERVICE_API_KEY
-            },
+        response = accountsDatabaseClient.put(
+            url="/update",
             data=json.dumps(user),
         )
         return response.json()
 
     @staticmethod
     def getAllModerators():
-        headers = {'x-api-key': DATABASE_SERVICE_API_KEY}
-        URL = DATABASE_API_URL + "/accounts/moderators"
-
-        return requests.get(URL, headers=headers)
+        response = accountsDatabaseClient.get(
+            url="/moderators",
+        )
+        return response
