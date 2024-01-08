@@ -1,8 +1,10 @@
+import concurrent
+
 from starlette import status
 from starlette.responses import JSONResponse
 from Core.Environment.pdfServiceEnv import PDF_SERVICE_API_KEY, PDF_SERVICE_API_URL
 from Core.Environment.databaseServiceEnv import DATABASE_SERVICE_API_KEY, DATABASE_API_URL
-from Services.adminServices import is_url, is_int, isModerator
+from Services.adminServices import is_url, is_int, isModerator, getDriveFilesId, GoogleDriveHandler, processMultiplePdf
 from Core.Shared.DatabaseOperations import Database
 import requests
 import json
@@ -29,6 +31,31 @@ async def ExtractFromPdf(URL):
         return JSONResponse(
             status_code=500,
             content={
+                "success": False,
+                "message": "Error while extracting data from PDF",
+                "error": str(e)
+            })
+
+async def ExtractFromPdfs(URLs):
+    try:
+        if not isinstance(URLs, list):
+            return JSONResponse(
+                status_code=400,
+                content={"message": "URLs is not valid"})
+
+        headers = {'x-api-key': PDF_SERVICE_API_KEY}
+
+        params = URLs
+
+        response = requests.get(PDF_SERVICE_API_URL, headers=headers, params=params)
+
+        return response.json()
+
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "success": False,
                 "message": "Error while extracting data from PDF",
                 "error": str(e)
             })
@@ -37,10 +64,13 @@ async def ExtractFromPdf(URL):
 async def getAllModerators():
     try:
         response = Database.getAllModerators()
-        return response.json()
+        response =  response.json()
+        response["success"] = True
+        return response
     except Exception as e:
         return JSONResponse(status_code=500,
             content={
+                "success": False,
                 "message": "Error while getting moderators",
                 "error": str(e)
             })
@@ -52,6 +82,7 @@ async def adminRestrictedPageHandler():
     except Exception as e:
         return JSONResponse(status_code=500,
             content={
+                "success": False,
                 "message": "Error while sending request to database-service",
                 "error": str(e)
             })
@@ -61,21 +92,36 @@ async def deleteModerator(id):
     try:
         isMod = isModerator(id)
 
+        if isMod == "No moderators found":
+            return JSONResponse(status_code=404,
+                content={
+                    "success":False,
+                    "message": "No moderators found"
+                })
+
         if type(isMod) != bool:
             return isMod
 
         if not isMod:
             return JSONResponse(status_code=400,
                 content={
+                    "success": False,
                     "message": "User is not a moderator"
                 })
 
         # Delete the user
         response = Database.deleteUser(str(id))
+
+        if response["message"] == "Account deleted successfully":
+            response["success"] = True
+        else:
+            response["success"] = False
+
         return response
     except Exception as e:
         return JSONResponse(status_code=500,
             content={
+                "success": False,
                 "message": "Error while deleting moderator",
                 "error": str(e)
             })
@@ -95,8 +141,7 @@ async def registerModeratorAccountHandler(name, email, password, phone):
             users = usersResponse["accounts"]
             if (len(users) == 0):
                 # generating the token
-                token_data = {"email": lowerCaseEmail, "status": "moderator"}
-                jwt_token = createJwtToken(token_data)
+
                 password = hashString(password)
                 user = {
                     "name": name,
@@ -104,8 +149,13 @@ async def registerModeratorAccountHandler(name, email, password, phone):
                     "password": password,
                     "phone": phone
                 }
-                Database.createUser(user, "moderator")
+                dbResponse = Database.createUser(user, "moderator")
                 del user["password"]
+                if (dbResponse["message"] != "Account created successfully"):
+                    raise dbResponse["message"]
+                id = dbResponse["account"]["id"]
+                token_data = {"id": str(id), "status": "moderator"}
+                jwt_token = createJwtToken(token_data)
                 response = JSONResponse(
                     content={"success": True, "message": "User created succesfully", "user": user},
                     headers={"Authorization": f"Bearer {jwt_token}"},
@@ -140,6 +190,7 @@ async def registerModeratorAccountHandler(name, email, password, phone):
         return JSONResponse(
             status_code=502,
             content={
+                "success": False,
                 "message": "error while registering user. got an Exception",
                 "error": str(e)
             }
@@ -220,5 +271,94 @@ async def editModeratorAccountHandler(updated_user):
                 "message": "Error while updating moderator",
                 "error": str(e)
             })
+
+
+async def extractFromDrive(URL):
+    try:
+        if not is_url(URL):
+            return JSONResponse(
+                status_code=400,
+                content={"message": "URL is not valid"})
+
+
+        # Extract the id of the google drive folder
+        folderId = GoogleDriveHandler.extractFolderId(URL)
+
+        # Use the ID to extract the id of the files
+        ids = getDriveFilesId(folderId)
+
+        # Extract the text from the files
+        downloadLinkArray = []
+        for id in ids:
+            downloadLinkArray.append(GoogleDriveHandler.extractGoogleDownloadLink(id))
+
+        extractedArticles = []
+        nbArticles = 0
+
+        for downloadLink in downloadLinkArray:
+            try :
+                article = await ExtractFromPdf(downloadLink)
+                extractedArticles.append(article)
+                print(article)
+                nbArticles += 1
+            except Exception as e:
+                print(e)
+                pass
+
+
+        response = {
+            "success": True,
+            "nbArticlesExtracted": nbArticles,
+            "articles": extractedArticles
+        }
+
+        print(response)
+
+        return response
+
+
+    except Exception as e:
+       return JSONResponse(
+            status_code=500,
+            content={
+                "message": "Error while extracting data from PDF",
+                "error": str(e)
+            })
+
+
+async def extractDownloadLinksFromDrive(URL):
+    try:
+        if not is_url(URL):
+            return JSONResponse(
+                status_code=400,
+                content={"message": "URL is not valid"})
+
+        # Extract the id of the google drive folder
+        folderId = GoogleDriveHandler.extractFolderId(URL)
+
+        # Use the ID to extract the id of the files
+        ids = getDriveFilesId(folderId)
+
+        # Extract the text from the files
+        downloadLinkArray = []
+        for id in ids:
+            downloadLinkArray.append(GoogleDriveHandler.extractGoogleDownloadLink(id))
+
+        response = {"success": True,
+                    "downloadLinks": downloadLinkArray}
+
+        return response
+
+
+
+    except Exception as e:
+       return JSONResponse(
+            status_code=500,
+            content={
+                "message": "Error while extracting data from PDF",
+                "error": str(e)
+            })
+
+
 
 

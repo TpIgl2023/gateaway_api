@@ -2,7 +2,8 @@ from typing import Dict
 
 from fastapi import APIRouter, Depends, Header
 
-from Handlers.adminHandlers import adminRestrictedPageHandler , ExtractFromPdf , getAllModerators , deleteModerator , registerModeratorAccountHandler , editModeratorAccountHandler
+from Handlers.adminHandlers import adminRestrictedPageHandler, ExtractFromPdf, getAllModerators, deleteModerator, \
+    registerModeratorAccountHandler, editModeratorAccountHandler, extractFromDrive, extractDownloadLinksFromDrive
 from Middlwares.AuthProtectionMiddlewares import isAdminProtected
 from Models.AuthModels import registerRequest
 from Models.PdfExtractionModel import ExtractionRequest
@@ -17,6 +18,17 @@ async def handlePage(user: str = Depends(isAdminProtected)):
 async def extractPDF(login_data: ExtractionRequest, user: str = Depends(isAdminProtected)):
     email = login_data.URL
     return await ExtractFromPdf(email)
+
+@adminRouter.post("/extract/multiple")
+async def extractMultiplePDF(login_data: ExtractionRequest, user: str = Depends(isAdminProtected)):
+    url = login_data.URL
+    return await extractFromDrive(url)
+
+@adminRouter.post("/extract/drive")
+async def extractDownloadLinks(login_data: ExtractionRequest, user: str = Depends(isAdminProtected)):
+    url = login_data.URL
+    return await extractDownloadLinksFromDrive(url)
+
 
 @adminRouter.get("/moderator")
 async def getModerators(user: str = Depends(isAdminProtected)):

@@ -23,13 +23,13 @@ async def loginAccountHandler(email, password):
                 for user in users:
                     if user["password"] == password:
                         del user["password"]
-                        token_data = {"email": user["email"],"status": user["status"]}
+                        token_data = {"id": user["id"],"status": user["status"]}
+
                         jwt_token = createJwtToken(token_data)
                         response = JSONResponse(
                             content={"success":True,"user":user},
                             headers={"Authorization": f"Bearer {jwt_token}"},
                             )
-
 
                         response.set_cookie(key="Authorization", value=jwt_token,httponly=True)
                         return response
@@ -64,8 +64,7 @@ async def registerUserAccountHandler(name, email, password, phone):
             users = usersResponse["accounts"]
             if (len(users) == 0):
                 # generating the token
-                token_data = {"email": lowerCaseEmail,"status": "user"}
-                jwt_token = createJwtToken(token_data)
+
                 password = hashString(password)
                 user = {
                     "name": name,
@@ -73,8 +72,14 @@ async def registerUserAccountHandler(name, email, password, phone):
                     "password": password,
                     "phone": phone
                 }
-                Database.createUser(user)
+                dbResponse = Database.createUser(user)
+                if (dbResponse["message"] != "Account created successfully"):
+                    raise dbResponse["message"]
                 del user["password"]
+                id = dbResponse["account"]["id"]
+                token_data = {"id": str(id),"status": "user"}
+                jwt_token = createJwtToken(token_data)
+
                 response = JSONResponse(
                     content={"success": True, "message": "User created succesfully", "user": user},
                     headers={"Authorization": f"Bearer {jwt_token}"},
