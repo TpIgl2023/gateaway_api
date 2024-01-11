@@ -12,12 +12,9 @@ async def loginAccountHandler(email, password):
     try:
         password = hashString(password)
 
-        # TODO: Remove this line after testing
-        password = "08419aa218f5b405d4499434ca899aeaa0ff049e27e915a02d4ea7645d9f8722"
-
         upperCaseEmail = email.lower()
 
-        usersResponse = Database.getAccountsWithFilter({"email":upperCaseEmail})
+        usersResponse = await Database.getAccountsWithFilter({"email":upperCaseEmail})
 
         # Check if the user exists
         if (usersResponse["message"] == "Accounts retrieved successfully"):
@@ -62,7 +59,7 @@ async def registerUserAccountHandler(name, email, password, phone):
         nameIsValid = validations.validate_name(name)
         errors = []
         if (emailIsValid & passwordIsValid & mobileIsValid & nameIsValid):
-            usersResponse = Database.getAccountsWithFilter({"email": lowerCaseEmail})
+            usersResponse = await Database.getAccountsWithFilter({"email": lowerCaseEmail})
             # check if email exists
             users = usersResponse["accounts"]
             if (len(users) == 0):
@@ -75,7 +72,7 @@ async def registerUserAccountHandler(name, email, password, phone):
                     "password": password,
                     "phone": phone
                 }
-                dbResponse = Database.createUser(user)
+                dbResponse = await Database.createUser(user)
                 if (dbResponse["message"] != "Account created successfully"):
                     raise dbResponse["message"]
                 del user["password"]

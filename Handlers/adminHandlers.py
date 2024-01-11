@@ -63,7 +63,7 @@ async def ExtractFromPdfs(URLs):
 
 async def getAllModerators():
     try:
-        response = Database.getAllModerators()
+        response = await Database.getAllModerators()
         response =  response.json()
         response["success"] = True
         return response
@@ -110,7 +110,7 @@ async def deleteModerator(id):
                 })
 
         # Delete the user
-        response = Database.deleteUser(str(id))
+        response = await Database.deleteUser(str(id))
 
         if response["message"] == "Account deleted successfully":
             response["success"] = True
@@ -136,7 +136,7 @@ async def registerModeratorAccountHandler(name, email, password, phone):
         nameIsValid = validations.validate_name(name)
         errors = []
         if (emailIsValid & passwordIsValid & mobileIsValid & nameIsValid):
-            usersResponse = Database.getAccountsWithFilter({"email": lowerCaseEmail})
+            usersResponse = await Database.getAccountsWithFilter({"email": lowerCaseEmail})
             # check if email exists
             users = usersResponse["accounts"]
             if (len(users) == 0):
@@ -149,7 +149,7 @@ async def registerModeratorAccountHandler(name, email, password, phone):
                     "password": password,
                     "phone": phone
                 }
-                dbResponse = Database.createUser(user, "moderator")
+                dbResponse = await Database.createUser(user, "moderator")
                 del user["password"]
                 if (dbResponse["message"] != "Account created successfully"):
                     raise dbResponse["message"]
@@ -203,6 +203,7 @@ async def editModeratorAccountHandler(updated_user):
         if "id" not in updated_user:
             return JSONResponse(status_code=400,
                                 content={
+                                    "success":False,
                                     "message": "Missing moderator id"})
 
         id = updated_user["id"]
@@ -221,6 +222,7 @@ async def editModeratorAccountHandler(updated_user):
         if (not is_int(id)):
             return JSONResponse(status_code=400,
                                 content={
+                                    "success":False,
                                     "message": "Invalid : moderator id is not an integer"})
 
         hasError = False
@@ -260,7 +262,7 @@ async def editModeratorAccountHandler(updated_user):
 
 
 
-        response = Database.updateUser(updated_user)
+        response = await Database.updateUser(updated_user)
 
         return response
 
@@ -268,6 +270,7 @@ async def editModeratorAccountHandler(updated_user):
     except Exception as e:
         return JSONResponse(status_code=500,
             content={
+                "success": False,
                 "message": "Error while updating moderator",
                 "error": str(e)
             })

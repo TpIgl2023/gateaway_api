@@ -43,5 +43,3 @@ def statusProtected(token,status):
         raise e
     except Exception:
         raise credentials_exception
-
-

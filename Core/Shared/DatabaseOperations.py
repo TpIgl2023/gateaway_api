@@ -4,9 +4,9 @@ from Core.Configuration.databaseConfiguration import articlesDatabaseClient, acc
 
 class Database:
     @staticmethod
-    def createUser(user, accountType="user"):
+    async def createUser(user, accountType="user"):
 
-        response = accountsDatabaseClient.post(
+        response = await accountsDatabaseClient.post(
             url="/create",
             headers=articlesDatabaseClient.headers.update({
                 "account_type": accountType
@@ -16,18 +16,27 @@ class Database:
         return response.json()
 
     @staticmethod
-    def getAccountsWithFilter(user):
+    async def getAccountsWithFilter(user):
 
-        response = accountsDatabaseClient.get(
+        response = await accountsDatabaseClient.get(
             url="/getAccounts",
-            data=json.dumps(user),
+            params=json.dumps(user),
         )
 
         return response.json()
 
     @staticmethod
-    def deleteUser(user_id):
-        response = accountsDatabaseClient.delete(
+    async def getAccountWithId(id):
+
+        response = await accountsDatabaseClient.get(
+            url=f'/{id}',
+        )
+
+        return response.json()
+
+    @staticmethod
+    async def deleteUser(user_id):
+        response = await accountsDatabaseClient.delete(
             url="/delete",
             headers=accountsDatabaseClient.headers.update({
                 "id": user_id
@@ -36,16 +45,16 @@ class Database:
         return response.json()
 
     @staticmethod
-    def updateUser(user):
-        response = accountsDatabaseClient.put(
+    async def updateUser(user):
+        response = await accountsDatabaseClient.put(
             url="/update",
             data=json.dumps(user),
         )
         return response.json()
 
     @staticmethod
-    def getAllModerators():
-        response = accountsDatabaseClient.get(
+    async def getAllModerators():
+        response = await accountsDatabaseClient.get(
             url="/moderators",
         )
         return response

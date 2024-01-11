@@ -29,8 +29,8 @@ def is_int(input_string):
     except ValueError:
         return False
 
-def isModerator(id):
-    response = Database.getAllModerators()
+async def isModerator(id):
+    response = await Database.getAllModerators()
     if response.status_code != 200:
         return JSONResponse(status_code=500,
             content={
