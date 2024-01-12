@@ -8,10 +8,10 @@ class Database:
 
         response = await accountsDatabaseClient.post(
             url="/create",
-            headers=articlesDatabaseClient.headers.update({
+            headers=accountsDatabaseClient.headers.update({
                 "account_type": accountType
             }),
-            data=json.dumps(user),
+            content=json.dumps(user),
         )
         return response.json()
 

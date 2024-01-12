@@ -1,3 +1,4 @@
+import re
 from urllib.parse import urlparse
 
 import requests
@@ -71,6 +72,14 @@ class GoogleDriveHandler:
         folder_id = folder_id.split("?")[0]
 
         return folder_id
+
+    @staticmethod
+    def isDriveLink(link):
+        # Regular expression for Google Drive folder link
+        drive_folder_pattern = re.compile(r'https://drive\.google\.com/drive/u/\d+/folders/[\w-]+')
+
+        # Check if the link matches the pattern
+        return bool(drive_folder_pattern.match(link))
 
 def getDriveFilesId(driveId):
 

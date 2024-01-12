@@ -19,13 +19,39 @@ async def ExtractFromPdf(URL):
                 status_code=400,
                 content={"message": "URL is not valid"})
 
-        headers = {'x-api-key': PDF_SERVICE_API_KEY}
+        if GoogleDriveHandler.isDriveLink(URL):
+            # Extract the id of the google drive folder
+            folderId = GoogleDriveHandler.extractFolderId(URL)
 
-        params = {'URL': URL}
+            # Use the ID to extract the id of the files
+            ids = getDriveFilesId(folderId)
 
-        response = requests.get(PDF_SERVICE_API_URL, headers=headers, params=params)
+            # Extract the text from the files
+            downloadLinkArray = []
+            for id in ids:
+                downloadLinkArray.append(GoogleDriveHandler.extractGoogleDownloadLink(id))
 
-        return response.json()
+            response = {"success": True,
+                        "sourceType":"drive",
+                        "downloadLinks": downloadLinkArray}
+
+            return response
+
+        else:
+            headers = {'x-api-key': PDF_SERVICE_API_KEY}
+
+            params = {'URL': URL}
+
+            response = requests.get(PDF_SERVICE_API_URL, headers=headers, params=params)
+
+            response =  response.json()
+
+            response["sourceType"] = "fileLink"
+            response["success"] = True
+
+            return response
+
+
 
     except Exception as e:
         return JSONResponse(
@@ -65,7 +91,19 @@ async def getAllModerators():
     try:
         response = await Database.getAllModerators()
         response =  response.json()
+        if response["message"] != "Moderators retrieved successfully":
+            return JSONResponse(status_code=500,
+                content={
+                    "success": False,
+                    "message": "Error while getting moderators",
+                    "error": response["message"]
+                })
         response["success"] = True
+        moderators = response["moderators"]
+        for moderator in moderators:
+            del moderator["password"]
+        response["moderators"] = moderators
+
         return response
     except Exception as e:
         return JSONResponse(status_code=500,
@@ -90,7 +128,7 @@ async def adminRestrictedPageHandler():
 
 async def deleteModerator(id):
     try:
-        isMod = isModerator(id)
+        isMod = await isModerator(id)
 
         if isMod == "No moderators found":
             return JSONResponse(status_code=404,
@@ -149,7 +187,7 @@ async def registerModeratorAccountHandler(name, email, password, phone):
                     "password": password,
                     "phone": phone
                 }
-                dbResponse = await Database.createUser(user, "moderator")
+                dbResponse = await Database.createUser(user, accountType="moderator")
                 del user["password"]
                 if (dbResponse["message"] != "Account created successfully"):
                     raise dbResponse["message"]
@@ -208,7 +246,7 @@ async def editModeratorAccountHandler(updated_user):
 
         id = updated_user["id"]
 
-        isMod = isModerator(id)
+        isMod = await isModerator(id)
 
         if type(isMod) != bool:
             return isMod
@@ -263,6 +301,8 @@ async def editModeratorAccountHandler(updated_user):
 
 
         response = await Database.updateUser(updated_user)
+
+        response["success"] = True
 
         return response
 
