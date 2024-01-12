@@ -74,8 +74,9 @@ async def registerUserAccountHandler(name, email, password, phone):
                     "phone": phone
                 }
                 dbResponse = await Database.createUser(user)
+
                 if (dbResponse["message"] != "Account created successfully"):
-                    raise dbResponse["message"]
+                    raise Exception(dbResponse["message"])
                 del user["password"]
                 id = dbResponse["account"]["id"]
                 token_data = {"id": str(id),"status": "user"}
