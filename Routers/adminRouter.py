@@ -5,8 +5,7 @@ from fastapi import APIRouter, Depends, Header
 from Handlers.adminHandlers import adminRestrictedPageHandler, ExtractFromPdf, getAllModerators, deleteModerator, \
     registerModeratorAccountHandler, editModeratorAccountHandler, extractFromDrive, extractDownloadLinksFromDrive
 from Middlwares.AuthProtectionMiddlewares import isAdminProtected
-from Models.AuthModels import registerRequest
-from Models.PdfExtractionModel import ExtractionRequest
+from Models.RequestsModels import registerRequest , ExtractionRequest
 
 adminRouter = APIRouter()
 

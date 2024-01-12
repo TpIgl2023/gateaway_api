@@ -97,7 +97,7 @@ async def modifyPasswordHandler(userToken, oldPassword, newPassword):
 
         id = int(id)
 
-        return modifyUserPassword(id, oldPassword, newPassword)
+        return await modifyUserPassword(id, oldPassword, newPassword)
 
     except Exception as e:
         return JSONResponse(status_code=500,

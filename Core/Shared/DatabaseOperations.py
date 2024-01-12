@@ -15,12 +15,13 @@ class Database:
         )
         return response.json()
 
+    #TODO : Ask what is this
     @staticmethod
     async def getAccountsWithFilter(user):
 
         response = await accountsDatabaseClient.get(
             url="/getAccounts",
-            params=json.dumps(user),
+            content=json.dumps(user),
         )
 
         return response.json()

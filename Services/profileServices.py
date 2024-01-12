@@ -23,31 +23,26 @@ async def modifyUserPassword(id, oldPassword, newPassword):
                 content={"success": False,
                          "message":missings})
 
-        response = await Database.getAccountsWithFilter({"id":id})
-        if (response["message"] == "Accounts retrieved successfully"):
-            users = response["accounts"]
-            if len(users) != 0:
-                for user in users:
-                    if user["password"] == hashString(oldPassword):
-                        user["password"] = newPassword
-                        response = Database.updateUser(user)
-                        if response["message"] == "Account updated successfully":
-                            return {"success":True , "message":"Password updated successfully"}
-                        else:
-                            raise Exception("Error while updating user password , database-service error")
-                    else:
-                        return JSONResponse(
-                            status_code=status.HTTP_401_UNAUTHORIZED,
-                            content={
-                                "success": False,
-                                "message":"Old password is incorrect"
-                            })
+        response = await Database.getAccountWithId(id)
+        if (response["message"] == "Account retrieved successfully"):
+            user= response["account"]
+
+            if user["password"] == hashString(oldPassword):
+                user["password"] = hashString(newPassword)
+                response = await Database.updateUser(user)
+                if response["message"] == "Account updated successfully":
+                    return {"success":True , "message":"Password updated successfully"}
+                else:
+                    raise Exception("Error while updating user password , database-service error")
             else:
-                raise Exception("User not found")
-
-
-
-
+                return JSONResponse(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    content={
+                        "success": False,
+                        "message":"Old password is incorrect"
+                    })
+        else:
+            raise Exception("User not found")
 
 
 async def modifyPersonalInfo(updated_user):
@@ -69,11 +64,7 @@ async def modifyPersonalInfo(updated_user):
                 errorMessage.append(errorsTypes.emailInvalid)
 
         if "password" in updated_user:
-            (val,missings) =  validations.validate_password(updated_user["password"])
-            if not val:
-                hasError = True
-                errorMessage.append(missings)
-            updated_user["password"] = hashString(updated_user["password"])
+            del updated_user["password"]
 
         if "phone" in updated_user:
             if not validations.validate_mobile(updated_user["phone"]):

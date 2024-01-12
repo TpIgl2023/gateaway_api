@@ -62,6 +62,7 @@ async def registerUserAccountHandler(name, email, password, phone):
             usersResponse = await Database.getAccountsWithFilter({"email": lowerCaseEmail})
             # check if email exists
             users = usersResponse["accounts"]
+            print(users)
             if (len(users) == 0):
                 # generating the token
 
