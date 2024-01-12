@@ -22,8 +22,20 @@ def isUserProtected(token: str = Depends(oauth2_scheme)):
 def isUserAndModProtected(token: str = Depends(oauth2_scheme)):
     for status in [UserStatus.USER, UserStatus.MODERATOR]:
         try:
-            return statusProtected(token, status)
-        except privilege_exception:
-            continue
+            # Attempt to get user ID for each status
+            user_id = statusProtected(token, status)
+
+            # If successful, return the user ID
+            return user_id
+        except HTTPException as e:
+            # Propagate HTTPException
+            raise e
+        except Exception:
+            # Log unexpected errors for debugging
+            pass
+
+    # If none of the statuses match, raise privilege_exception
     raise privilege_exception
+
+
 

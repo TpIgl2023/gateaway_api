@@ -1,7 +1,7 @@
 from Handlers.authHandlers import loginAccountHandler
 from fastapi import APIRouter, Depends
 
-from Models.AuthModels import LoginRequest , registerRequest
+from Models.RequestsModels import LoginRequest , registerRequest
 
 from Handlers.authHandlers import registerUserAccountHandler
 

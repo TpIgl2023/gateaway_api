@@ -36,7 +36,7 @@ async def modify_article(article_id: int, request: Request, user: str = Depends(
 
 
 @articlesRouter.get("/{article_id}")
-async def get_article_by_id(article_id: int, user: str = Depends(isUserAndModProtected())):
+async def get_article_by_id(article_id: int, user: str = Depends(isUserAndModProtected)):
     return await articles_handler.get_article_by_id_handler(article_id, user)
 
 
@@ -46,7 +46,7 @@ async def delete_article(article_id: int, user: str = Depends(isModeratorProtect
 
 
 @articlesRouter.get("/")
-async def get_articles(request: Request, user: str = Depends(isUserAndModProtected())):
+async def get_articles(request: Request, user: str = Depends(isUserAndModProtected)):
     return await articles_handler.search_articles_handler(request, user)
 
 

@@ -1,5 +1,8 @@
 from pydantic import BaseModel
 
+class ExtractionRequest(BaseModel):
+    URL: str
+
 class registerRequest(BaseModel):
     name: str
     email: str
@@ -9,3 +12,7 @@ class registerRequest(BaseModel):
 class LoginRequest(BaseModel):
     email: str
     password: str
+
+class ModifyPasswordRequest(BaseModel):
+    oldPassword: str
+    newPassword: str
