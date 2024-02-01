@@ -7,9 +7,18 @@ from Routers.rootRouter import rootRouter
 from Routers.root_router import root_router
 from Routers.articlesRouter import articlesRouter
 from Routers.profileRouter import profileRouter
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(root_router)
 
