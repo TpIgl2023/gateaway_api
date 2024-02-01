@@ -1,4 +1,5 @@
 from unittest import TestCase
+import phonenumbers
 
 from Services.authServices import validate_email_syntax, validate_password, validate_mobile, validate_name
 
@@ -50,11 +51,12 @@ class Testvalidations(TestCase):
         self.assertEqual(missings, ['Password should have at least one of the symbols $@#%'])
 
     def test_validate_mobile_valid(self):
-        self.assertTrue(validate_mobile("1234567890"))
-        self.assertTrue(validate_mobile("11234567890"))
+        self.assertTrue(validate_mobile("+2134567890"))
+        self.assertTrue(validate_mobile("+21334567890"))
 
     def test_validate_mobile_invalid(self):
-        self.assertFalse(validate_mobile("invalid-number"))
+        with self.assertRaises(phonenumbers.phonenumberutil.NumberParseException):
+            validate_mobile("invalid-number")
         self.assertFalse(validate_mobile("+12345"))  # Too short
         self.assertFalse(validate_mobile("+12345678901234567890"))  # Too long
         self.assertFalse(validate_mobile("1234567890"))  # Missing '+'

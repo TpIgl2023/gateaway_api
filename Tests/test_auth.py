@@ -3,13 +3,14 @@ import json
 import unittest
 from unittest.mock import patch
 from Handlers.authHandlers import loginAccountHandler
+import asyncio
 
 
-class TestLoginAccountHandler(unittest.TestCase):
+class TestLoginAccountHandler(unittest.IsolatedAsyncioTestCase):
 
-    @patch('Core.hashString.hashString')
-    @patch('Core.hashString.getAccountsWithFilter')
-    @patch('Core.hashString.createJwtToken')
+    @patch('Services.authServices.hashString')
+    @patch('Core.Shared.DatabaseOperations.Database.getAccountsWithFilter')
+    @patch('Services.authServices.createJwtToken')
     async def test_successful_login(self, mock_createJwtToken, mock_getAccountsWithFilter, mock_hashString):
         # Arrange
         test_email = "test@example.com"
