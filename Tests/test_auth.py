@@ -2,7 +2,7 @@ import asyncio
 import json
 import unittest
 from unittest.mock import patch
-from Handlers.loginAccountHandler import loginAccountHandler
+from Handlers.authHandlers import loginAccountHandler
 
 
 class TestLoginAccountHandler(unittest.TestCase):

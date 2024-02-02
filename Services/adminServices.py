@@ -1,3 +1,4 @@
+import re
 from urllib.parse import urlparse
 
 import requests
@@ -29,8 +30,8 @@ def is_int(input_string):
     except ValueError:
         return False
 
-def isModerator(id):
-    response = Database.getAllModerators()
+async def isModerator(id):
+    response = await Database.getAllModerators()
     if response.status_code != 200:
         return JSONResponse(status_code=500,
             content={
@@ -71,6 +72,14 @@ class GoogleDriveHandler:
         folder_id = folder_id.split("?")[0]
 
         return folder_id
+
+    @staticmethod
+    def isDriveLink(link):
+        # Regular expression for Google Drive folder link
+        drive_folder_pattern = re.compile(r'https://drive\.google\.com/drive/u/\d+/folders/[\w-]+')
+
+        # Check if the link matches the pattern
+        return bool(drive_folder_pattern.match(link))
 
 def getDriveFilesId(driveId):
 

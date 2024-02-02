@@ -5,3 +5,9 @@ articlesDatabaseClient = AsyncClient(
     base_url=DATABASE_API_URL+"/articles",
     headers={"X-API-KEY": DATABASE_SERVICE_API_KEY}
 )
+
+accountsDatabaseClient = AsyncClient(
+    base_url=DATABASE_API_URL+"/accounts",
+    headers={"X-API-KEY": DATABASE_SERVICE_API_KEY}
+)
+

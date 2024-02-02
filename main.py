@@ -20,7 +20,7 @@ app.include_router(profileRouter, prefix="/profile")
 app.include_router(articlesRouter, prefix="/articles")
 
 
-# uvicorn.run(app, host="0.0.0.0", port=8000)
+#uvicorn.run(app, host="0.0.0.0", port=8000)
 
 # You can start the server by running : uvicorn main:app --reload
 # Or simply run the main.py file

@@ -1,7 +1,7 @@
 from Handlers.authHandlers import loginAccountHandler
 from fastapi import APIRouter, Depends
 
-from Models.AuthModels import LoginRequest , registerRequest
+from Models.RequestsModels import LoginRequest , registerRequest
 
 from Handlers.authHandlers import registerUserAccountHandler
 
@@ -9,6 +9,7 @@ authRouter = APIRouter()
 
 @authRouter.post("/login")
 async def loginAccount(login_data: LoginRequest):
+
     email = login_data.email
     password = login_data.password
     return await loginAccountHandler(email, password)

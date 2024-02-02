@@ -14,7 +14,7 @@ async def loginAccountHandler(email, password):
 
         upperCaseEmail = email.lower()
 
-        usersResponse = Database.getAccountsWithFilter({"email":upperCaseEmail})
+        usersResponse = await Database.getAccountsWithFilter({"email":upperCaseEmail})
 
         # Check if the user exists
         if (usersResponse["message"] == "Accounts retrieved successfully"):
@@ -59,9 +59,10 @@ async def registerUserAccountHandler(name, email, password, phone):
         nameIsValid = validations.validate_name(name)
         errors = []
         if (emailIsValid & passwordIsValid & mobileIsValid & nameIsValid):
-            usersResponse = Database.getAccountsWithFilter({"email": lowerCaseEmail})
+            usersResponse = await Database.getAccountsWithFilter({"email": lowerCaseEmail})
             # check if email exists
             users = usersResponse["accounts"]
+            print(users)
             if (len(users) == 0):
                 # generating the token
 
@@ -72,9 +73,10 @@ async def registerUserAccountHandler(name, email, password, phone):
                     "password": password,
                     "phone": phone
                 }
-                dbResponse = Database.createUser(user)
+                dbResponse = await Database.createUser(user)
+
                 if (dbResponse["message"] != "Account created successfully"):
-                    raise dbResponse["message"]
+                    raise Exception(dbResponse["message"])
                 del user["password"]
                 id = dbResponse["account"]["id"]
                 token_data = {"id": str(id),"status": "user"}

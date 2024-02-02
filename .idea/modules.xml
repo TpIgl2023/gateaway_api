@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/GatewayAPIService.iml" filepath="$PROJECT_DIR$/.idea/GatewayAPIService.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/APIGateway.iml" filepath="$PROJECT_DIR$/.idea/APIGateway.iml" />
     </modules>
   </component>
 </project>
