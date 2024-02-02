@@ -27,7 +27,7 @@ async def loginAccountHandler(email, password):
 
                         jwt_token = createJwtToken(token_data)
                         response = JSONResponse(
-                            content={"success":True,"user":user},
+                            content={"success":True,"user":user, "token" : jwt_token},
                             headers={"Authorization": f"Bearer {jwt_token}"},
                             )
 

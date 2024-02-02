@@ -82,7 +82,7 @@ async def get_article_by_id_handler(article_id: int, user_id: str):
         article = await get_article_by_id(article_id, user_id=int(user_id) if user_id is not None else None)
 
         if article is None:
-            return JSONResponse(status_code=404,
+            return JSONResponse(status_code=200,
                                 content={
                                     "message": "Article not found",
                                     "article": {}
@@ -154,7 +154,7 @@ async def search_articles_handler(request: Request, user_id: str):
                                     "articles": articles
                                 })
         else:
-            return JSONResponse(status_code=404,
+            return JSONResponse(status_code=200,
                                 content={
                                     "message": "Articles not found",
                                     "articles": []
@@ -192,13 +192,14 @@ async def add_article_to_favorite_handler(request: Request, user_id: str):
                                     "article": article
                                 })
         else:
-            return JSONResponse(status_code=404,
+            return JSONResponse(status_code=200,
                                 content={
                                     "message": "Article not found",
                                     "article": {}
                                 })
 
     except DatabaseException as e:
+        print(e)
         return JSONResponse(status_code=e.status_code,
                             content={
                                 "message": "Error while adding article to favorite",
@@ -227,7 +228,8 @@ async def remove_article_from_favorite_handler(request: Request, user_id: str):
                                     "article": article
                                 })
         else:
-            return JSONResponse(status_code=404,
+            return JSONResponse(status_code=200
+                                ,
                                 content={
                                     "message": "Article not found",
                                     "article": {}
@@ -240,6 +242,7 @@ async def remove_article_from_favorite_handler(request: Request, user_id: str):
                                 "error": e.message
                             })
     except Exception as e:
+        print(e)
         return JSONResponse(status_code=400,
                             content={
                                 "message": "Error while removing article from favorite",
@@ -259,7 +262,8 @@ async def get_favorite_articles_handler(user_id: str):
                                     "articles": articles
                                 })
         else:
-            return JSONResponse(status_code=404,
+            return JSONResponse(status_code=200
+                                ,
                                 content={
                                     "message": "Articles not found",
                                     "articles": []
@@ -291,7 +295,7 @@ async def get_articles_handler(user_id: str = None):
                                     "articles": articles
                                 })
         else:
-            return JSONResponse(status_code=404,
+            return JSONResponse(status_code=200,
                                 content={
                                     "message": "Articles not found",
                                     "articles": []
