@@ -1,4 +1,5 @@
 import concurrent
+from datetime import datetime
 
 from starlette import status
 from starlette.responses import JSONResponse
@@ -48,6 +49,23 @@ async def ExtractFromPdf(URL):
 
             response["sourceType"] = "fileLink"
             response["success"] = True
+
+            if 'publishingDate' in response:
+                date_string = response['publishingDate']
+                try:
+                    # Convert the string to a dictionary
+                    date_dict = json.loads(date_string)
+                    if 'formatted_date' in date_dict:
+                        # Parse the date string
+                        date_object = datetime.strptime(date_dict['formatted_date'], '%Y-%m-%dT%H:%M:%S.%fZ')
+                        # Format the date as required
+                        formatted_date = date_object.strftime('%Y-%m-%d')
+                        # Update the dictionary
+                        response['publishingDate'] = formatted_date
+                except (ValueError, json.JSONDecodeError):
+                    response['publishingDate'] = None
+                    print("Error: Unable to parse date string.")
+
 
             return response
 
@@ -303,6 +321,8 @@ async def editModeratorAccountHandler(updated_user):
         response = await Database.updateUser(updated_user)
 
         response["success"] = True
+
+
 
         return response
 
