@@ -17,8 +17,10 @@ async def ExtractFromPdf(URL):
     try:
         if not is_url(URL):
             return JSONResponse(
-                status_code=400,
-                content={"message": "URL is not valid"})
+                status_code=200,
+                content={
+                    "success": False,
+                    "message": "URL is not valid"})
 
         if GoogleDriveHandler.isDriveLink(URL):
             # Extract the id of the google drive folder
@@ -54,16 +56,19 @@ async def ExtractFromPdf(URL):
                 date_string = response['publishingDate']
                 try:
                     # Convert the string to a dictionary
-                    date_dict = json.loads(date_string)
-                    if 'formatted_date' in date_dict:
-                        # Parse the date string
-                        date_object = datetime.strptime(date_dict['formatted_date'], '%Y-%m-%dT%H:%M:%S.%fZ')
-                        # Format the date as required
-                        formatted_date = date_object.strftime('%Y-%m-%d')
-                        # Update the dictionary
-                        response['publishingDate'] = formatted_date
-                except (ValueError, json.JSONDecodeError):
-                    response['publishingDate'] = None
+                    if date_string is not None:
+                        date_dict = json.loads(date_string)
+                        if 'formatted_date' in date_dict:
+                            # Parse the date string
+                            date_object = datetime.strptime(date_dict['formatted_date'], '%Y-%m-%dT%H:%M:%S.%fZ')
+                            # Format the date as required
+                            formatted_date = date_object.strftime('%Y-%m-%d')
+                            # Update the dictionary
+                            response['publishingDate'] = formatted_date
+                    else:
+                        response['publishingDate'] = ""
+                except Exception as e:
+                    response['publishingDate'] = ""
                     print("Error: Unable to parse date string.")
 
 
@@ -72,6 +77,7 @@ async def ExtractFromPdf(URL):
 
 
     except Exception as e:
+        print(e)
         return JSONResponse(
             status_code=500,
             content={
