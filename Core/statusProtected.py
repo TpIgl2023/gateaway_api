@@ -32,6 +32,7 @@ def statusProtected(token,status):
         print(payload)
         id: str = payload.get("id")
         user_status : str = payload.get("status")
+
         if user_status != status:
             raise privilege_exception
         if id == None:
@@ -42,4 +43,26 @@ def statusProtected(token,status):
     except HTTPException as e:
         raise e
     except Exception:
+        print("credentials exception")
+        raise credentials_exception
+
+
+def statusProtectedForMulti(token,status):
+    try:
+        payload = jwt.decode(token, HASHING_SECRET_KEY, algorithms=[HASH_ALGORITHM])
+        print(payload)
+        id: str = payload.get("id")
+        user_status : str = payload.get("status")
+
+        if user_status != status:
+            return False
+        if id == None:
+            raise credentials_exception
+
+        # Else , continue. (Don't raise any exception)
+        return id
+    except HTTPException as e:
+        raise e
+    except Exception:
+        print("credentials exception")
         raise credentials_exception

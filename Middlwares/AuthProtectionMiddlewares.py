@@ -3,7 +3,7 @@ from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.security import OAuth2PasswordBearer
 
 from Core.UserStatus import UserStatus
-from Core.statusProtected import statusProtected, privilege_exception
+from Core.statusProtected import statusProtected, privilege_exception, statusProtectedForMulti
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -23,8 +23,8 @@ def isUserAndModProtected(token: str = Depends(oauth2_scheme)):
     for status in [UserStatus.USER, UserStatus.MODERATOR]:
         try:
             # Attempt to get user ID for each status
-            user_id = statusProtected(token, status)
-
+            user_id = statusProtectedForMulti(token, status)
+            if not user_id: continue
             # If successful, return the user ID
             return user_id
         except HTTPException as e:
